@@ -2,7 +2,7 @@
 
 # NestJS React Router
 
-<table align="center">
+<table align="center" border="0" cellpadding="0" cellspacing="0">
   <tr>
     <td align="center">
       <img src="assets/logos/nestjs-logo.svg" alt="NestJS Logo" width="120" height="120"/>
