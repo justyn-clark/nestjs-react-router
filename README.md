@@ -1,11 +1,24 @@
+<div align="center">
+
 # NestJS React Router
 
+<p align="center">
+  <img src="assets/logos/nestjs-logo.svg" alt="NestJS Logo" width="120" height="120" style="margin-right: 20px;"/>
+  <img src="assets/logos/rr_logo_light.svg" alt="React Router Logo" width="120" height="120"/>
+</p>
+
 🚀 **The ultimate full-stack TypeScript framework** combining NestJS + React Router + Fastify + SSR
+
+<p align="center">
+  <strong>Combining the power of NestJS and React Router for a seamless full-stack experience</strong>
+</p>
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 [![TypeScript](https://img.shields.io/badge/TypeScript-5.6+-blue.svg)](https://www.typescriptlang.org/)
 [![React Router](https://img.shields.io/badge/React%20Router-7.9+-61DAFB.svg)](https://reactrouter.com/)
 [![NestJS](https://img.shields.io/badge/NestJS-10.4+-E0234E.svg)](https://nestjs.com/)
+
+</div>
 
 ## ✨ Features
 
