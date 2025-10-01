@@ -1,5 +1,7 @@
 
-import { Controller, All, Req, Res, Get } from '@nestjs/common';
+import { Controller, All, Req, Res, Get, Inject } from '@nestjs/common';
+import { InjectQueue } from '@nestjs/bullmq';
+import { Queue } from 'bullmq';
 import type { FastifyRequest, FastifyReply } from 'fastify';
 import { db } from '@nestjs-react-router/db';
 import { redis } from '@nestjs-react-router/redis';
@@ -10,6 +12,9 @@ import { join } from 'path';
 
 
 export class AppController {
+  constructor(
+    @InjectQueue('demo') private demoQueue: Queue,
+  ) { }
 
   // @Get('/')
   // async index(@Res() reply: FastifyReply) {
@@ -23,7 +28,7 @@ export class AppController {
 
   @Get('/api/queue/add')
   async addJob(@Res() reply: FastifyReply) {
-    const job = await demoQueue.add('echo', { ts: Date.now() });
+    const job = await this.demoQueue.add('echo', { ts: Date.now() });
     reply.send({ enqueued: job.id });
   }
 
@@ -105,7 +110,7 @@ export class AppController {
 
     try {
       // @ts-ignore: importing TSX outside this package for SSR bridge only in dev
-      const webEntry: any = await import('../../../apps/web/src/entry-server');
+      const webEntry: any = await import('../../../../web/src/entry-server');
       const { handler, context } = await webEntry.resolveContext(request);
 
       if (context instanceof Response) {
@@ -130,7 +135,7 @@ export class AppController {
       if (!req.url?.includes('favicon.ico') && !req.url?.startsWith('/.well-known/')) {
         console.error('React Router error:', error.message);
       }
-      
+
       // Return a simple 404 for unmatched routes
       reply.code(404).send('Not Found');
     }
@@ -138,4 +143,3 @@ export class AppController {
 }
 
 
-import { demoQueue } from './queue';

@@ -4,7 +4,7 @@
   "packageManager": "pnpm@9.7.0",
   "scripts": {
     "build": "turbo build",
-    "dev": "lsof -ti:3000,5174 | xargs -r kill -9 && turbo run dev --filter @nestjs-react-router/server...",
+    "dev": "lsof -ti:3000,5174 | xargs -r kill -9; pkill -f 'turbo run dev' 2>/dev/null || true; pkill -f 'tsx.*watch.*main.ts' 2>/dev/null || true; turbo run dev --filter @nestjs-react-router/server...",
     "lint": "npx biome lint .",
     "lint:fix": "npx biome lint --write .",
     "format": "npx biome format --write .",
@@ -12,6 +12,7 @@
     "check:fix": "npx biome check --write .",
     "typecheck": "turbo typecheck",
     "clean": "turbo clean && rm -rf node_modules",
+    "kill": "lsof -ti:3000,5174 | xargs -r kill -9; pkill -f 'turbo run dev' 2>/dev/null || true; pkill -f 'tsx.*watch.*main.ts' 2>/dev/null || true; pkill -f 'turbo.*daemon' 2>/dev/null || true; echo 'All dev processes killed'",
     "db:push": "pnpm --filter @nestjs-react-router/db drizzle:push",
     "db:studio": "pnpm --filter @nestjs-react-router/db drizzle:studio",
     "db:generate": "pnpm --filter @nestjs-react-router/db drizzle:generate",
