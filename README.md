@@ -2,11 +2,17 @@
 
 # NestJS React Router
 
-<p align="center">
-  <img src="assets/logos/nestjs-logo.svg" alt="NestJS Logo" width="120" height="120"/>
-  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-  <img src="assets/logos/rr_logo_light.svg" alt="React Router Logo" width="120" height="120"/>
-</p>
+<table align="center">
+  <tr>
+    <td align="center">
+      <img src="assets/logos/nestjs-logo.svg" alt="NestJS Logo" width="120" height="120"/>
+    </td>
+    <td width="50"></td>
+    <td align="center">
+      <img src="assets/logos/rr_logo_light.svg" alt="React Router Logo" width="120" height="120"/>
+    </td>
+  </tr>
+</table>
 
 🚀 **The ultimate full-stack TypeScript framework** combining NestJS + React Router + Fastify + SSR
 
