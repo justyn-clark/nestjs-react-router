@@ -1,16 +1,15 @@
-
-import { defineConfig } from 'vite'
-import react from '@vitejs/plugin-react'
+import { defineConfig } from 'vite';
+import react from '@vitejs/plugin-react';
 
 export default defineConfig({
   plugins: [react()],
   build: {
-    outDir: "dist/client",
+    outDir: 'dist/client',
     rollupOptions: {
-      input: "src/entry-client.tsx",
+      input: 'src/entry-client.tsx',
       output: {
-        entryFileNames: "entry-client.js"
-      }
-    }
-  }
-})
+        entryFileNames: 'entry-client.js',
+      },
+    },
+  },
+});

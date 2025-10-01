@@ -52,8 +52,8 @@ This is a **monorepo** that combines:
 
 - Node.js 18+
 - pnpm 9+
-- PostgreSQL (for database)
-- Redis (for caching)
+- Docker (for PostgreSQL and Redis)
+- OR PostgreSQL and Redis installed locally
 
 ### Installation
 
@@ -74,26 +74,92 @@ This is a **monorepo** that combines:
 
    ```bash
    cp .env.example .env
-   # Edit .env with your database and Redis credentials
+   # The .env file is already configured for Docker services
    ```
 
-4. **Set up the database**
+4. **Start PostgreSQL and Redis (Choose one option)**
+
+   **Option A: Using Docker (Recommended)**
+   ```bash
+   # Start only the database services
+   docker compose up -d postgres redis
+   
+   # Wait for services to be ready (about 10-15 seconds)
+   docker compose ps
+   ```
+
+   **Option B: Local Installation**
+   ```bash
+   # If you have PostgreSQL and Redis installed locally
+   # Make sure they're running on ports 5432 and 6379
+   # Update .env file with your local connection strings
+   ```
+
+5. **Set up the database**
 
    ```bash
    pnpm db:push
    ```
 
-5. **Start the development server**
+6. **Start the development server**
 
    ```bash
    pnpm dev
    ```
 
-6. **Open your browser**
+7. **Open your browser**
 
    ```
    http://localhost:3000
    ```
+
+### Quick Setup Test
+
+To verify everything is working correctly, run our test script:
+
+```bash
+# Option 1: Using pnpm script (recommended)
+pnpm test:setup
+
+# Option 2: Direct script execution
+chmod +x scripts/test-setup.sh
+./scripts/test-setup.sh
+```
+
+This script will:
+- ✅ Check all prerequisites
+- ✅ Install dependencies
+- ✅ Set up environment variables
+- ✅ Start database services
+- ✅ Push database schema
+- ✅ Test application startup
+- ✅ Verify API endpoints
+
+### Troubleshooting
+
+**Port already in use?**
+```bash
+# Check what's using the ports
+lsof -ti:5432,6379
+
+# Kill processes if needed
+lsof -ti:5432,6379 | xargs kill -9
+
+# Or use different ports in docker-compose.yml
+```
+
+**Database connection issues?**
+```bash
+# Check if services are running
+docker compose ps
+
+# Check logs
+docker compose logs postgres
+docker compose logs redis
+
+# Restart services
+docker compose restart postgres redis
+```
 
 ## 📁 Project Structure
 

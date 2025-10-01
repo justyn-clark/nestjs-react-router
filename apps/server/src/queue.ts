@@ -1,4 +1,3 @@
-
 import { Queue } from 'bullmq';
 
 export const demoQueue = new Queue('demo', {

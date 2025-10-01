@@ -3,7 +3,7 @@ import { Controller, All, Req, Res, Get } from '@nestjs/common';
 import type { FastifyRequest, FastifyReply } from 'fastify';
 import { db } from '@nestjs-react-router/db';
 import { redis } from '@nestjs-react-router/redis';
-import { readFileSync } from 'fs';
+import { readFileSync, existsSync } from 'fs';
 import { join } from 'path';
 
 @Controller()
@@ -41,10 +41,22 @@ export class AppController {
 
   @All('*')
   async handle(@Req() req: FastifyRequest, @Res() reply: FastifyReply) {
+    // Handle common browser requests that don't need React Router
+    if (req.url === '/favicon.ico') {
+      reply.code(204).send();
+      return;
+    }
+
+    if (req.url?.startsWith('/.well-known/')) {
+      reply.code(404).send();
+      return;
+    }
+
     // Handle static assets directly
     if (req.url === '/static/entry-client.js') {
       try {
-        const clientPath = '/Users/justin/Documents/WebDevelopment/TURBO/rr7-nest-monorepo-updated-all/apps/web/dist/client/entry-client.js';
+        // Go up one level from apps/server to the project root
+        const clientPath = join(process.cwd(), '../web/dist/client/entry-client.js');
         const content = readFileSync(clientPath, 'utf8');
         reply.header('Content-Type', 'application/javascript');
         reply.send(content);
@@ -59,7 +71,8 @@ export class AppController {
     // Handle CSS files
     if (req.url?.startsWith('/static/assets/') && req.url.endsWith('.css')) {
       try {
-        const cssPath = '/Users/justin/Documents/WebDevelopment/TURBO/rr7-nest-monorepo-updated-all/apps/web/dist/client' + req.url.replace('/static', '');
+        // Go up one level from apps/server to the project root
+        const cssPath = join(process.cwd(), '../web/dist/client' + req.url.replace('/static', ''));
         const content = readFileSync(cssPath, 'utf8');
         reply.header('Content-Type', 'text/css');
         reply.send(content);
@@ -90,27 +103,37 @@ export class AppController {
 
     const request = new Request(url, { method, headers, body });
 
-    // @ts-ignore: importing TSX outside this package for SSR bridge only in dev
-    const webEntry: any = await import('../../../apps/web/src/entry-server');
-    const { handler, context } = await webEntry.resolveContext(request);
+    try {
+      // @ts-ignore: importing TSX outside this package for SSR bridge only in dev
+      const webEntry: any = await import('../../../apps/web/src/entry-server');
+      const { handler, context } = await webEntry.resolveContext(request);
 
-    if (context instanceof Response) {
-      const status = context.status;
-      const headersObj: Record<string, string> = {};
-      context.headers.forEach((v, k) => (headersObj[k] = v));
-      reply.code(status).headers(headersObj);
-      const buf = Buffer.from(await context.arrayBuffer());
-      reply.send(buf);
-      return;
+      if (context instanceof Response) {
+        const status = context.status;
+        const headersObj: Record<string, string> = {};
+        context.headers.forEach((v, k) => (headersObj[k] = v));
+        reply.code(status).headers(headersObj);
+        const buf = Buffer.from(await context.arrayBuffer());
+        reply.send(buf);
+        return;
+      }
+
+      const { createRouter } = webEntry as any;
+      const router = createRouter(handler, context);
+      reply.header('Content-Type', 'text/html; charset=utf-8');
+      reply.header('Cache-Control', 'no-store');
+
+      const { pipeToNodeWritable } = webEntry as any;
+      pipeToNodeWritable(reply.raw, router, context);
+    } catch (error: any) {
+      // Only log errors that aren't common browser requests
+      if (!req.url?.includes('favicon.ico') && !req.url?.startsWith('/.well-known/')) {
+        console.error('React Router error:', error.message);
+      }
+      
+      // Return a simple 404 for unmatched routes
+      reply.code(404).send('Not Found');
     }
-
-    const { createRouter } = webEntry as any;
-    const router = createRouter(handler, context);
-    reply.header('Content-Type', 'text/html; charset=utf-8');
-    reply.header('Cache-Control', 'no-store');
-
-    const { pipeToNodeWritable } = webEntry as any;
-    pipeToNodeWritable(reply.raw, router, context);
   }
 }
 

@@ -6,16 +6,12 @@
     "jsx": "react-jsx",
     "outDir": "dist",
     "rootDir": ".",
-    "types": [
-      "node"
-    ],
+    "types": ["node"],
     "strict": true,
     "esModuleInterop": true,
     "skipLibCheck": true,
     "emitDecoratorMetadata": true,
     "experimentalDecorators": true
   },
-  "include": [
-    "src"
-  ]
+  "include": ["src"]
 }
