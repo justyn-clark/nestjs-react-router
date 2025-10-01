@@ -2,7 +2,7 @@
 
 # NestJS React Router
 
-<p align="center">
+<p align="center" style="display: flex; align-items: center; justify-content: center;">
   <img src="assets/logos/nestjs-logo.svg" alt="NestJS Logo" width="120" height="120" style="margin-right: 20px;"/>
   <img src="assets/logos/rr_logo_light.svg" alt="React Router Logo" width="120" height="120"/>
 </p>
