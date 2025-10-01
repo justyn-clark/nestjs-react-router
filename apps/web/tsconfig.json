@@ -1,0 +1,25 @@
+{
+  "compilerOptions": {
+    "target": "ES2022",
+    "jsx": "react-jsx",
+    "module": "ESNext",
+    "moduleResolution": "Bundler",
+    "baseUrl": ".",
+    "paths": {
+      "@acme/shared/*": [
+        "../../packages/shared/src/*"
+      ]
+    },
+    "types": [
+      "@react-router/dev",
+      "vite/client",
+      "node"
+    ],
+    "strict": true,
+    "skipLibCheck": true
+  },
+  "include": [
+    "src",
+    "vite-env.d.ts"
+  ]
+}
