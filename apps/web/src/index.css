@@ -1,7 +1,6 @@
-@tailwind base;
-@tailwind components;
-@tailwind utilities;
+@import "tailwindcss";
 
+/* Test comment to change content hash */
 @layer base {
   :root {
     --background: 0 0% 100%;
@@ -51,11 +50,16 @@
 
 @layer base {
   * {
-    @apply border-border;
+    @apply border-gray-200;
   }
 
   body {
-    @apply bg-background text-foreground;
+    @apply bg-white text-gray-900;
     font-feature-settings: "rlig" 1, "calt" 1;
+  }
+  
+  /* Test change to force new hash */
+  .test-class {
+    @apply text-red-500;
   }
 }
