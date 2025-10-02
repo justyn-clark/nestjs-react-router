@@ -1,6 +1,8 @@
 import * as React from 'react';
 
 export function Home() {
+  console.log('Home');
+
   return (
     <div className="space-y-6">
       <div className="text-center">
@@ -10,6 +12,9 @@ export function Home() {
         <p className="text-xl text-muted-foreground mb-8">
           A modern full-stack application with server-side rendering, client-side
           navigation, and beautiful UI.
+        </p>
+        <p className="text-lg text-green-600 font-semibold">
+          🔥 Hot Module Replacement is working!
         </p>
       </div>
 

@@ -1,6 +1,6 @@
 import * as React from 'react';
 import { createStaticHandler, createStaticRouter, StaticRouterProvider } from 'react-router';
-import { renderToPipeableStream } from 'react-dom/server';
+import { renderToString } from 'react-dom/server';
 import { readFileSync, readdirSync } from 'fs';
 import { join } from 'path';
 import { routes } from './routes';
@@ -44,26 +44,31 @@ export function pipeToNodeWritable(
   context: any,
   nonce?: string
 ) {
-
   const cssFiles = getCssFiles();
   const cssLinks = cssFiles.map(cssFile =>
     `<link rel="stylesheet" href="/static/${cssFile}">`
   ).join('');
 
-  const open = `<!DOCTYPE html><html><head><meta charset="utf-8"/><meta name="viewport" content="width=device-width,initial-scale=1"/><title>RR7 + Nest</title>${cssLinks}</head><body><div id="root">`;
-  const hydrationData = JSON.stringify(context);
-  const close = `</div><script>window.__staticRouterHydrationData = JSON.parse(${JSON.stringify(hydrationData)});</script><script ${nonce ? `nonce="${nonce}"` : ''} type="module" src="/static/entry-client.js"></script></body></html>`;
-  replyRaw.write(open);
-  const { pipe } = renderToPipeableStream(
-    <StaticRouterProvider router={router} context={context} />,
-    {
-      onAllReady() {
-        pipe(replyRaw);
-        replyRaw.write(close);
-      },
-      onError(err) {
-        console.error(err);
-      },
-    }
+  // Render the app to string - React Router will inject hydration data automatically
+  const html = renderToString(
+    <StaticRouterProvider router={router} context={context} nonce={nonce} />
   );
+
+  // Write the complete HTML document
+  const document = `<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8"/>
+  <meta name="viewport" content="width=device-width,initial-scale=1"/>
+  <title>RR7 + Nest</title>
+  ${cssLinks}
+</head>
+<body>
+  <div id="root">${html}</div>
+  <script ${nonce ? `nonce="${nonce}"` : ''} type="module" src="/static/entry-client.js"></script>
+</body>
+</html>`;
+
+  replyRaw.write(document);
+  replyRaw.end();
 }

@@ -28,6 +28,6 @@ import { QueueModule } from '../queue/queue.module';
     }),
     QueueModule,
   ],
-  controllers: [AppController, AuthController],
+  controllers: [AuthController, AppController],
 })
 export class AppModule { }

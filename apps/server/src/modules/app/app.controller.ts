@@ -44,50 +44,46 @@ export class AppController {
     }
   }
 
+  @Get('favicon.ico')
+  async favicon(@Res() reply: FastifyReply) {
+    // Handle favicon requests silently
+    reply.code(204).send();
+  }
+
+  @Get('static/entry-client.js')
+  async clientScript(@Res() reply: FastifyReply) {
+    try {
+      const clientPath = join(process.cwd(), '../web/dist/client/entry-client.js');
+      const content = readFileSync(clientPath, 'utf8');
+      reply.header('Content-Type', 'application/javascript');
+      reply.send(content);
+    } catch (e) {
+      console.error('Error serving client script:', e);
+      reply.code(404).send({ error: 'Client script not found' });
+    }
+  }
+
+  @Get('static/assets/*')
+  async cssAssets(@Req() req: FastifyRequest, @Res() reply: FastifyReply) {
+    try {
+      const cssPath = join(process.cwd(), '../web/dist/client' + req.url.replace('/static', ''));
+      const content = readFileSync(cssPath, 'utf8');
+      reply.header('Content-Type', 'text/css');
+      reply.send(content);
+    } catch (e) {
+      console.error('Error serving CSS:', e);
+      reply.code(404).send({ error: 'CSS file not found' });
+    }
+  }
+
+  @Get('.well-known/*')
+  async wellKnown(@Res() reply: FastifyReply) {
+    // Handle .well-known requests (browser noise) silently
+    reply.code(404).send();
+  }
+
   @All('*')
   async handle(@Req() req: FastifyRequest, @Res() reply: FastifyReply) {
-    // Handle common browser requests that don't need React Router
-    if (req.url === '/favicon.ico') {
-      reply.code(204).send();
-      return;
-    }
-
-    if (req.url?.startsWith('/.well-known/')) {
-      reply.code(404).send();
-      return;
-    }
-
-    // Handle static assets directly
-    if (req.url === '/static/entry-client.js') {
-      try {
-        // Go up one level from apps/server to the project root
-        const clientPath = join(process.cwd(), '../web/dist/client/entry-client.js');
-        const content = readFileSync(clientPath, 'utf8');
-        reply.header('Content-Type', 'application/javascript');
-        reply.send(content);
-        return;
-      } catch (e) {
-        console.error('Error serving client script:', e);
-        reply.code(404).send({ error: 'Client script not found' });
-        return;
-      }
-    }
-
-    // Handle CSS files
-    if (req.url?.startsWith('/static/assets/') && req.url.endsWith('.css')) {
-      try {
-        // Go up one level from apps/server to the project root
-        const cssPath = join(process.cwd(), '../web/dist/client' + req.url.replace('/static', ''));
-        const content = readFileSync(cssPath, 'utf8');
-        reply.header('Content-Type', 'text/css');
-        reply.send(content);
-        return;
-      } catch (e) {
-        console.error('Error serving CSS:', e);
-        reply.code(404).send({ error: 'CSS file not found' });
-        return;
-      }
-    }
     const url = `http://${req.headers.host}${req.url}`;
     const method = req.method;
     const headers = new Headers();
@@ -102,6 +98,15 @@ export class AppController {
       } else if (req.body) {
         if (headers.get('content-type')?.includes('application/json')) {
           body = JSON.stringify(req.body);
+        } else if (headers.get('content-type')?.includes('application/x-www-form-urlencoded')) {
+          // Handle form data
+          console.log('Raw form body:', req.body);
+          const formData = new URLSearchParams();
+          for (const [key, value] of Object.entries(req.body)) {
+            console.log(`Form field: ${key} = ${value}`);
+            formData.append(key, value as string);
+          }
+          body = formData;
         }
       }
     }
@@ -131,8 +136,19 @@ export class AppController {
       const { pipeToNodeWritable } = webEntry as any;
       pipeToNodeWritable(reply.raw, router, context);
     } catch (error: any) {
-      // Only log errors that aren't common browser requests
-      if (!req.url?.includes('favicon.ico') && !req.url?.startsWith('/.well-known/')) {
+      // Only log errors that aren't common browser noise
+      const isBrowserNoise = req.url?.includes('favicon.ico') ||
+        req.url?.startsWith('/.well-known/') ||
+        req.url?.includes('chrome-extension') ||
+        req.url?.includes('devtools') ||
+        req.url?.includes('__webpack') ||
+        req.url?.includes('hot-update') ||
+        req.url?.includes('service-worker') ||
+        req.url?.includes('manifest.json') ||
+        req.url?.includes('robots.txt') ||
+        req.url?.includes('sitemap.xml');
+
+      if (!isBrowserNoise) {
         console.error('React Router error:', error.message);
       }
 

@@ -1,6 +1,14 @@
 import * as React from 'react';
 
 export function Test() {
+  const [count, setCount] = React.useState(0);
+  const [clientSide, setClientSide] = React.useState(false);
+
+  React.useEffect(() => {
+    console.log('Test component mounted on client!');
+    setClientSide(true);
+  }, []);
+
   return (
     <div className="space-y-6">
       <div className="flex items-center space-x-3 mb-6">
@@ -8,6 +16,25 @@ export function Test() {
           <span className="text-white text-lg">🧪</span>
         </div>
         <h2 className="text-2xl font-bold text-foreground">Test Page</h2>
+      </div>
+
+      {/* Client-side hydration test */}
+      <div className="p-6 bg-gradient-to-br from-yellow-50 to-orange-50 border border-yellow-200 rounded-lg">
+        <h3 className="text-lg font-semibold text-gray-900 mb-3">
+          Client-Side Hydration Test
+        </h3>
+        <p className="text-gray-600 mb-4">
+          Status: {clientSide ? '✅ JavaScript is running!' : '⏳ Waiting for hydration...'}
+        </p>
+        <div className="flex items-center space-x-4">
+          <button
+            onClick={() => setCount(count + 1)}
+            className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition-colors"
+          >
+            Click me!
+          </button>
+          <span className="text-lg font-semibold">Count: {count}</span>
+        </div>
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">

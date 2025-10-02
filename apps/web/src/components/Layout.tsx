@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { Outlet, useLoaderData, Form, Link, useNavigation } from 'react-router-dom';
+import { Outlet, useLoaderData, Form, Link, useNavigation, useActionData } from 'react-router';
 
 interface LayoutData {
   msg: string;
@@ -10,6 +10,7 @@ interface LayoutData {
 export function Layout() {
   const data = useLoaderData() as LayoutData;
   const navigation = useNavigation();
+  const actionData = useActionData() as { error?: string } | undefined;
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-50 to-blue-50">
@@ -30,17 +31,25 @@ export function Layout() {
                 <span className="text-sm text-muted-foreground">
                   Welcome, {data.user.email}
                 </span>
-                <Form method="post" action="/api/logout">
+                <form method="post">
+                  <input type="hidden" name="_action" value="logout" />
                   <button
                     type="submit"
                     className="inline-flex items-center px-3 py-1.5 text-sm font-medium text-muted-foreground hover:text-foreground transition-colors border border-border rounded-md hover:bg-accent"
                   >
                     Logout
                   </button>
-                </Form>
+                </form>
               </div>
             ) : (
-              <Form method="post" action="/api/login" className="flex items-center space-x-2">
+              <Form
+                method="post"
+                className="flex items-center space-x-2"
+                onSubmit={(e) => {
+                  console.log('Form submitted!', e);
+                  // Removed preventDefault so that react-router can process the submission
+                }}
+              >
                 <input
                   type="email"
                   name="email"
@@ -75,6 +84,13 @@ export function Layout() {
         {data.message && (
           <div className="mb-8 p-4 bg-amber-50 border border-amber-200 rounded-lg">
             <p className="text-sm text-amber-800 font-medium">⚠️ {data.message}</p>
+          </div>
+        )}
+
+        {/* Action Error Message */}
+        {actionData?.error && (
+          <div className="mb-8 p-4 bg-red-50 border border-red-200 rounded-lg">
+            <p className="text-sm text-red-800 font-medium">❌ {actionData.error}</p>
           </div>
         )}
 

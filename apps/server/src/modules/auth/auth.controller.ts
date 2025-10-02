@@ -28,4 +28,20 @@ export class AuthController {
     const user = (req as any).session?.user || null;
     reply.send({ user });
   }
+
+  @Get('login')
+  async loginGet(@Res() reply: FastifyReply) {
+    reply.code(405).send({
+      error: 'Method not allowed',
+      message: 'Use POST /api/login with email in request body'
+    });
+  }
+
+  @Get('logout')
+  async logoutGet(@Res() reply: FastifyReply) {
+    reply.code(405).send({
+      error: 'Method not allowed',
+      message: 'Use POST /api/logout to logout'
+    });
+  }
 }

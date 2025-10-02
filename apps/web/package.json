@@ -4,8 +4,8 @@
   "type": "module",
   "private": true,
   "scripts": {
-    "dev": "echo 'Web served by Nest server at :3000'",
     "build": "vite build",
+    "dev": "vite build --watch",
     "preview": "vite preview",
     "lint": "npx biome lint .",
     "lint:fix": "npx biome lint --write .",
