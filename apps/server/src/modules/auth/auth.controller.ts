@@ -2,30 +2,42 @@
 import { Controller, Post, Body, Res, Get, Req } from '@nestjs/common';
 import type { FastifyReply, FastifyRequest } from 'fastify';
 
-@Controller('api')
+interface SessionRequest extends FastifyRequest {
+  session: Record<string, unknown> | null;
+  sessionId?: string;
+}
+
+interface SessionServer {
+  saveSession(req: FastifyRequest): Promise<void>;
+  destroySession(req: FastifyRequest, reply: FastifyReply): Promise<void>;
+}
+
+@Controller('auth')
 export class AuthController {
   @Post('login')
-  async login(@Body() body: any, @Req() req: FastifyRequest, @Res() reply: FastifyReply) {
+  async login(@Body() body: { email?: string }, @Req() req: SessionRequest, @Res() reply: FastifyReply) {
     const { email } = body || {};
     if (!email) {
       reply.code(400).send({ error: 'email required' });
       return;
     }
     // naive: put user in session
-    (req as any).session.user = { email };
-    await (req as any).server.saveSession(req);
+    if (req.session) {
+      req.session.user = { email };
+    }
+    await (req.server as SessionServer).saveSession(req);
     reply.send({ ok: true });
   }
 
   @Post('logout')
-  async logout(@Req() req: FastifyRequest, @Res() reply: FastifyReply) {
-    await (req as any).server.destroySession(req, reply);
+  async logout(@Req() req: SessionRequest, @Res() reply: FastifyReply) {
+    await (req.server as SessionServer).destroySession(req, reply);
     reply.send({ ok: true });
   }
 
   @Get('me')
-  async me(@Req() req: FastifyRequest, @Res() reply: FastifyReply) {
-    const user = (req as any).session?.user || null;
+  async me(@Req() req: SessionRequest, @Res() reply: FastifyReply) {
+    const user = req.session?.user || null;
     reply.send({ user });
   }
 
@@ -33,7 +45,7 @@ export class AuthController {
   async loginGet(@Res() reply: FastifyReply) {
     reply.code(405).send({
       error: 'Method not allowed',
-      message: 'Use POST /api/login with email in request body'
+      message: 'Use POST /auth/login with email in request body'
     });
   }
 
@@ -41,7 +53,7 @@ export class AuthController {
   async logoutGet(@Res() reply: FastifyReply) {
     reply.code(405).send({
       error: 'Method not allowed',
-      message: 'Use POST /api/logout to logout'
+      message: 'Use POST /auth/logout to logout'
     });
   }
 }

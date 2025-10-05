@@ -1,8 +1,6 @@
 import * as React from 'react';
 
 export function Home() {
-  console.log('Home');
-
   return (
     <div className="space-y-6">
       <div className="text-center">
@@ -10,11 +8,12 @@ export function Home() {
           Welcome to React Router 7 + NestJS
         </h2>
         <p className="text-xl text-muted-foreground mb-8">
-          A modern full-stack application with server-side rendering, client-side
-          navigation, and beautiful UI.
+          A modern full-stack application with server-side rendering, client-side navigation, and
+          beautiful UI.
         </p>
         <p className="text-lg text-green-600 font-semibold">
-          🔥 Hot Module Replacement is working!
+          🔥 Hot Module Replacement is working! (Updated at {new Date().toLocaleTimeString()}) -
+          Test 8
         </p>
       </div>
 
@@ -23,9 +22,7 @@ export function Home() {
           <div className="w-12 h-12 bg-blue-600 rounded-lg flex items-center justify-center mb-4">
             <span className="text-white text-xl">⚡</span>
           </div>
-          <h3 className="text-lg font-semibold text-gray-900 mb-2">
-            Server-Side Rendering
-          </h3>
+          <h3 className="text-lg font-semibold text-gray-900 mb-2">Server-Side Rendering</h3>
           <p className="text-gray-600">
             Fast initial page loads with SSR powered by NestJS and React Router 7.
           </p>
@@ -36,9 +33,7 @@ export function Home() {
             <span className="text-white text-xl">🔄</span>
           </div>
           <h3 className="text-lg font-semibold text-gray-900 mb-2">Client Navigation</h3>
-          <p className="text-gray-600">
-            Smooth client-side navigation without page refreshes.
-          </p>
+          <p className="text-gray-600">Smooth client-side navigation without page refreshes.</p>
         </div>
 
         <div className="p-6 bg-gradient-to-br from-purple-50 to-pink-50 border border-purple-200 rounded-lg">

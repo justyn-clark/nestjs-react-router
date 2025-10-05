@@ -71,6 +71,23 @@
           }
         }
       }
+    },
+    {
+      "include": [
+        "apps/server/**/*.ts"
+      ],
+      "linter": {
+        "rules": {
+          "correctness": {
+            "noUnusedVariables": "error"
+          }
+        }
+      },
+      "javascript": {
+        "parser": {
+          "unsafeParameterDecoratorsEnabled": true
+        }
+      }
     }
   ]
 }

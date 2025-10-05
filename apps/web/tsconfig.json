@@ -8,7 +8,7 @@
     "paths": {
       "@acme/shared/*": ["../../packages/shared/src/*"]
     },
-    "types": ["@react-router/dev", "vite/client", "node"],
+    "types": ["vite/client", "node"],
     "strict": true,
     "skipLibCheck": true
   },

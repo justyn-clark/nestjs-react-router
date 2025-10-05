@@ -6,7 +6,7 @@ export default defineConfig({
   plugins: [tailwindcss(), react()],
   build: {
     outDir: 'dist/client',
-    manifest: true, // Generate manifest.json
+    manifest: true,
     rollupOptions: {
       input: 'src/entry-client.tsx',
       output: {

@@ -11,4 +11,4 @@ import { DemoProcessor } from './demo.processor';
   providers: [DemoProcessor],
   exports: [BullModule],
 })
-export class QueueModule { }
+export class QueueModule {}

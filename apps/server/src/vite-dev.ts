@@ -1,6 +1,6 @@
 import { createServer as createViteServer } from 'vite';
 import type { ViteDevServer } from 'vite';
-import { join } from 'path';
+import { join } from 'node:path';
 
 let vite: ViteDevServer | undefined;
 
@@ -12,6 +12,9 @@ export async function createViteDevServer() {
       root: join(process.cwd(), '../web'),
       server: {
         middlewareMode: true,
+        hmr: {
+          port: 24678,
+        },
       },
       appType: 'custom',
     });

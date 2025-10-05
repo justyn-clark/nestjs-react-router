@@ -2,7 +2,7 @@ import * as React from 'react';
 import { Form, useActionData } from 'react-router-dom';
 
 export function Contact() {
-  const res = useActionData() as any;
+  const res = useActionData() as { ok?: boolean; error?: string } | undefined;
 
   return (
     <div className="space-y-6">
@@ -16,10 +16,7 @@ export function Contact() {
       <div className="max-w-md">
         <Form method="post" className="space-y-4">
           <div>
-            <label
-              htmlFor="email"
-              className="block text-sm font-medium text-foreground mb-2"
-            >
+            <label htmlFor="email" className="block text-sm font-medium text-foreground mb-2">
               Email Address
             </label>
             <input

@@ -2,7 +2,7 @@ import type { LoaderFunctionArgs } from 'react-router';
 
 export async function rootLoader({ request }: LoaderFunctionArgs) {
   const url = new URL(request.url);
-  const me = await fetch(url.origin + '/api/me', {
+  const me = await fetch(`${url.origin}/auth/me`, {
     headers: { cookie: request.headers.get('cookie') || '' },
   });
   const userData = await me.json();
@@ -10,7 +10,7 @@ export async function rootLoader({ request }: LoaderFunctionArgs) {
   return Response.json({
     msg: 'hello from RR7 (loader via Nest SSR)',
     user: userData.user,
-    message: url.searchParams.get('message')
+    message: url.searchParams.get('message'),
   });
 }
 
@@ -22,7 +22,7 @@ export async function streamLoader() {
 
 export async function dashboardLoader({ request }: LoaderFunctionArgs) {
   const url = new URL(request.url);
-  const me = await fetch(url.origin + '/api/me', {
+  const me = await fetch(`${url.origin}/auth/me`, {
     headers: { cookie: request.headers.get('cookie') || '' },
   });
   const data = await me.json();

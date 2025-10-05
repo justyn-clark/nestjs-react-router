@@ -11,7 +11,6 @@ import ErrorBoundary from './components/ErrorBoundary';
 import { rootLoader, streamLoader, dashboardLoader } from './routes/loaders';
 import { rootAction, contactAction } from './routes/actions';
 
-
 export const routes: RouteObject[] = [
   {
     id: 'root',
@@ -35,6 +34,7 @@ export const routes: RouteObject[] = [
         id: 'dashboard',
         path: 'dashboard',
         loader: dashboardLoader,
+        action: rootAction,
         Component: Dashboard,
       },
       {

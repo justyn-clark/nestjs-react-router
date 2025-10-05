@@ -13,9 +13,9 @@ import { QueueModule } from '../queue/queue.module';
     BullModule.forRoot({
       connection: {
         host: process.env.REDIS_HOST || 'localhost',
-        port: parseInt(process.env.REDIS_PORT || '6379'),
+        port: Number.parseInt(process.env.REDIS_PORT || '6379'),
         password: process.env.REDIS_PASSWORD,
-        db: parseInt(process.env.REDIS_DB || '0'),
+        db: Number.parseInt(process.env.REDIS_DB || '0'),
         enableReadyCheck: false,
         enableOfflineQueue: false,
       },
@@ -30,4 +30,4 @@ import { QueueModule } from '../queue/queue.module';
   ],
   controllers: [AuthController, AppController],
 })
-export class AppModule { }
+export class AppModule {}

@@ -6,7 +6,7 @@ import sessionPlugin from './plugins/session';
 
 const PORT = Number.parseInt(
   process.env.PORT || (process.env.NODE_ENV === 'production' ? '8080' : '3000'),
-  10,
+  10
 );
 
 const HOST = process.env.NODE_ENV === 'production' ? '::' : 'localhost';
@@ -28,10 +28,10 @@ async function bootstrap() {
         abortOnError: false,
         bufferLogs: true,
         snapshot: true,
-      },
+      }
     );
 
-    await app.register(sessionPlugin as any);
+    await app.register(sessionPlugin);
 
     await app.listen(PORT, HOST);
     console.log(`Server on http://${HOST}:${PORT}`);

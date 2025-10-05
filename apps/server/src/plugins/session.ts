@@ -2,11 +2,11 @@ import fp from 'fastify-plugin';
 import cookie from '@fastify/cookie';
 import type { FastifyInstance, FastifyRequest, FastifyReply } from 'fastify';
 import { redis } from '@nestjs-react-router/redis';
-import { randomUUID } from 'crypto';
+import { randomUUID } from 'node:crypto';
 
 declare module 'fastify' {
   interface FastifyRequest {
-    session: Record<string, any> | null;
+    session: Record<string, unknown> | null;
     sessionId?: string;
   }
 }
@@ -21,7 +21,7 @@ export default fp(
     });
 
     app.addHook('onRequest', async (req, reply) => {
-      const sidCookie = req.cookies['sid'];
+      const sidCookie = req.cookies.sid;
       let sid = sidCookie;
       if (!sid) {
         sid = randomUUID();
@@ -62,5 +62,5 @@ export default fp(
       }
     );
   },
-  { name: 'session' } as any
+  { name: 'session' }
 );

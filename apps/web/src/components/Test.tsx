@@ -18,16 +18,14 @@ export function Test() {
         <h2 className="text-2xl font-bold text-foreground">Test Page</h2>
       </div>
 
-      {/* Client-side hydration test */}
       <div className="p-6 bg-gradient-to-br from-yellow-50 to-orange-50 border border-yellow-200 rounded-lg">
-        <h3 className="text-lg font-semibold text-gray-900 mb-3">
-          Client-Side Hydration Test
-        </h3>
+        <h3 className="text-lg font-semibold text-gray-900 mb-3">Client-Side Hydration Test</h3>
         <p className="text-gray-600 mb-4">
           Status: {clientSide ? '✅ JavaScript is running!' : '⏳ Waiting for hydration...'}
         </p>
         <div className="flex items-center space-x-4">
           <button
+            type="button"
             onClick={() => setCount(count + 1)}
             className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition-colors"
           >
@@ -39,26 +37,18 @@ export function Test() {
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
         <div className="p-6 bg-gradient-to-br from-purple-50 to-pink-50 border border-purple-200 rounded-lg">
-          <h3 className="text-lg font-semibold text-gray-900 mb-3">
-            ✅ Client-Side Navigation
-          </h3>
+          <h3 className="text-lg font-semibold text-gray-900 mb-3">✅ Client-Side Navigation</h3>
           <p className="text-gray-600">Navigation works without page refreshes.</p>
         </div>
 
         <div className="p-6 bg-gradient-to-br from-green-50 to-emerald-50 border border-green-200 rounded-lg">
-          <h3 className="text-lg font-semibold text-gray-900 mb-3">
-            ✅ Server-Side Rendering
-          </h3>
-          <p className="text-gray-600">
-            Pages are rendered on the server for fast initial loads.
-          </p>
+          <h3 className="text-lg font-semibold text-gray-900 mb-3">✅ Server-Side Rendering</h3>
+          <p className="text-gray-600">Pages are rendered on the server for fast initial loads.</p>
         </div>
 
         <div className="p-6 bg-gradient-to-br from-blue-50 to-indigo-50 border border-blue-200 rounded-lg">
           <h3 className="text-lg font-semibold text-gray-900 mb-3">✅ Tailwind CSS</h3>
-          <p className="text-gray-600">
-            Beautiful styling with utility-first CSS framework.
-          </p>
+          <p className="text-gray-600">Beautiful styling with utility-first CSS framework.</p>
         </div>
 
         <div className="p-6 bg-gradient-to-br from-orange-50 to-red-50 border border-orange-200 rounded-lg">

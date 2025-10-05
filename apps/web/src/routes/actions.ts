@@ -2,15 +2,15 @@ import type { ActionFunctionArgs } from 'react-router';
 
 export async function rootAction({ request }: ActionFunctionArgs) {
   const formData = await request.formData();
-  const _action = formData.get('_action');
+  const action = formData.get('action');
 
   // Handle logout
-  if (_action === 'logout') {
+  if (action === 'logout') {
     try {
-      const response = await fetch(new URL('/api/logout', request.url).toString(), {
+      const response = await fetch(new URL('/auth/logout', request.url).toString(), {
         method: 'POST',
         headers: {
-          'Cookie': request.headers.get('cookie') || '',
+          Cookie: request.headers.get('cookie') || '',
         },
       });
 
@@ -20,22 +20,26 @@ export async function rootAction({ request }: ActionFunctionArgs) {
 
       return Response.redirect('/');
     } catch (error) {
+      if (error instanceof Error) {
+        return Response.json({ error: error.message }, { status: 500 });
+      }
       return Response.json({ error: 'Logout failed' }, { status: 500 });
     }
   }
 
   // Handle login
   const email = formData.get('email');
+
   if (!email || typeof email !== 'string') {
     return Response.json({ error: 'Email is required' }, { status: 400 });
   }
 
   try {
-    const response = await fetch(new URL('/api/login', request.url).toString(), {
+    const response = await fetch(new URL('/auth/login', request.url).toString(), {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
-        'Cookie': request.headers.get('cookie') || '',
+        Cookie: request.headers.get('cookie') || '',
       },
       body: JSON.stringify({ email }),
     });
@@ -48,6 +52,9 @@ export async function rootAction({ request }: ActionFunctionArgs) {
     // Redirect to dashboard on successful login
     return Response.redirect('/dashboard');
   } catch (error) {
+    if (error instanceof Error) {
+      return Response.json({ error: error.message }, { status: 500 });
+    }
     return Response.json({ error: 'Login failed' }, { status: 500 });
   }
 }
@@ -62,4 +69,13 @@ export async function contactAction({ request }: ActionFunctionArgs) {
 
   // TODO: Implement contact form submission logic
   return Response.json({ ok: true });
+}
+
+export async function dashboardAction({ request }: ActionFunctionArgs) {
+  const formData = await request.formData();
+  const action = formData.get('action');
+
+  if (action === 'logout') {
+    return Response.redirect('/');
+  }
 }

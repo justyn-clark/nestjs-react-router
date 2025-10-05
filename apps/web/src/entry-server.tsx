@@ -1,8 +1,8 @@
 import * as React from 'react';
 import { createStaticHandler, createStaticRouter, StaticRouterProvider } from 'react-router';
 import { renderToString } from 'react-dom/server';
-import { readFileSync, readdirSync } from 'fs';
-import { join } from 'path';
+import { readFileSync, readdirSync } from 'node:fs';
+import { join } from 'node:path';
 import { routes } from './routes';
 
 export function createHandler() {
@@ -16,7 +16,7 @@ export async function resolveContext(request: Request) {
   return { handler, context };
 }
 
-export function createRouter(handler: any, context: any) {
+export function createRouter(handler: ReturnType<typeof createStaticHandler>, context: unknown) {
   return createStaticRouter(handler.dataRoutes, context);
 }
 
@@ -26,13 +26,15 @@ function getCssFiles(): string[] {
     const manifest = JSON.parse(readFileSync(manifestPath, 'utf8'));
     const entry = manifest['src/entry-client.tsx'];
     return entry?.css || [];
-  } catch (error) {
+  } catch (_error) {
     try {
       const assetsPath = join(process.cwd(), '../web/dist/client/assets');
       const files = readdirSync(assetsPath);
-      const cssFile = files.find((file: string) => file.startsWith('entry-client-') && file.endsWith('.css'));
+      const cssFile = files.find(
+        (file: string) => file.startsWith('entry-client-') && file.endsWith('.css')
+      );
       return cssFile ? [`assets/${cssFile}`] : [];
-    } catch (fallbackError) {
+    } catch (_fallbackError) {
       return [];
     }
   }
@@ -40,14 +42,14 @@ function getCssFiles(): string[] {
 
 export function pipeToNodeWritable(
   replyRaw: NodeJS.WritableStream,
-  router: any,
-  context: any,
+  router: ReturnType<typeof createStaticRouter>,
+  context: unknown,
   nonce?: string
 ) {
   const cssFiles = getCssFiles();
-  const cssLinks = cssFiles.map(cssFile =>
-    `<link rel="stylesheet" href="/static/${cssFile}">`
-  ).join('');
+  const cssLinks = cssFiles
+    .map((cssFile) => `<link rel="stylesheet" href="/static/${cssFile}">`)
+    .join('');
 
   // Render the app to string - React Router will inject hydration data automatically
   const html = renderToString(
@@ -55,19 +57,22 @@ export function pipeToNodeWritable(
   );
 
   // Write the complete HTML document
+  const clientScript = `<script ${nonce ? `nonce="${nonce}"` : ''} type="module" src="/static/entry-client.js"></script>`;
+
+  // Write the complete HTML document
   const document = `<!DOCTYPE html>
-<html>
-<head>
-  <meta charset="utf-8"/>
-  <meta name="viewport" content="width=device-width,initial-scale=1"/>
-  <title>RR7 + Nest</title>
-  ${cssLinks}
-</head>
-<body>
-  <div id="root">${html}</div>
-  <script ${nonce ? `nonce="${nonce}"` : ''} type="module" src="/static/entry-client.js"></script>
-</body>
-</html>`;
+    <html>
+    <head>
+      <meta charset="utf-8"/>
+      <meta name="viewport" content="width=device-width,initial-scale=1"/>
+      <title>RR7 + Nest</title>
+      ${cssLinks}
+    </head>
+    <body>
+      <div id="root">${html}</div>
+      ${clientScript}
+    </body>
+    </html>`;
 
   replyRaw.write(document);
   replyRaw.end();

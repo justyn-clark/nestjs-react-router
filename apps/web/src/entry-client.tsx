@@ -5,11 +5,32 @@ import './index.css';
 
 // Get hydration data from the server
 declare global {
-  var __staticRouterHydrationData: any;
+  var __staticRouterHydrationData: unknown;
 }
 
 const router = createBrowserRouter(routes, {
   hydrationData: window.__staticRouterHydrationData,
 });
 
-hydrateRoot(document.getElementById('root')!, <RouterProvider router={router} />);
+const rootElement = document.getElementById('root');
+if (rootElement) {
+  hydrateRoot(rootElement, <RouterProvider router={router} />);
+}
+
+// Enable HMR for React components
+if (import.meta.hot) {
+  import.meta.hot.accept('./routes', (newRoutes) => {
+    if (newRoutes) {
+      // Recreate router with new routes
+      const newRouter = createBrowserRouter(newRoutes.routes, {
+        hydrationData: window.__staticRouterHydrationData,
+      });
+
+      // Re-render with new router
+      const rootElement = document.getElementById('root');
+      if (rootElement) {
+        hydrateRoot(rootElement, <RouterProvider router={newRouter} />);
+      }
+    }
+  });
+}

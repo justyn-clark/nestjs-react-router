@@ -1,29 +1,26 @@
 
-import { Controller, All, Req, Res, Get, Inject } from '@nestjs/common';
+import { Controller, All, Req, Res, Get } from '@nestjs/common';
 import { InjectQueue } from '@nestjs/bullmq';
-import { Queue } from 'bullmq';
+import type { Queue } from 'bullmq';
 import type { FastifyRequest, FastifyReply } from 'fastify';
-import { db } from '@nestjs-react-router/db';
 import { redis } from '@nestjs-react-router/redis';
-import { readFileSync, existsSync } from 'fs';
-import { join } from 'path';
+import { readFileSync } from 'node:fs';
+import { join } from 'node:path';
+
+interface SessionRequest extends FastifyRequest {
+  session: Record<string, unknown> | null;
+  sessionId?: string;
+}
 
 @Controller()
-
-
 export class AppController {
   constructor(
     @InjectQueue('demo') private demoQueue: Queue,
   ) { }
 
-  // @Get('/')
-  // async index(@Res() reply: FastifyReply) {
-  //   reply.send({ message: 'Hello World' });
-  // }
-
   @Get('/api/session-debug')
-  async sess(@Req() req: FastifyRequest, @Res() reply: FastifyReply) {
-    reply.send({ sid: (req as any).sessionId || null, session: (req as any).session || null });
+  async sess(@Req() req: SessionRequest, @Res() reply: FastifyReply) {
+    reply.send({ sid: req.sessionId || null, session: req.session || null });
   }
 
   @Get('/api/queue/add')
@@ -66,7 +63,7 @@ export class AppController {
   @Get('static/assets/*')
   async cssAssets(@Req() req: FastifyRequest, @Res() reply: FastifyReply) {
     try {
-      const cssPath = join(process.cwd(), '../web/dist/client' + req.url.replace('/static', ''));
+      const cssPath = join(process.cwd(), `../web/dist/client${req.url.replace('/static', '')}`);
       const content = readFileSync(cssPath, 'utf8');
       reply.header('Content-Type', 'text/css');
       reply.send(content);
@@ -91,9 +88,9 @@ export class AppController {
       if (typeof v === 'string') headers.set(k, v);
     }
 
-    let body: any = undefined;
+    let body: unknown = undefined;
     if (method !== 'GET' && method !== 'HEAD') {
-      if ((req as any).raw && (req as any).raw.readable) {
+      if ((req as any).raw?.readable) {
         body = (req as any).raw;
       } else if (req.body) {
         if (headers.get('content-type')?.includes('application/json')) {
@@ -115,27 +112,29 @@ export class AppController {
 
     try {
       // @ts-ignore: importing TSX outside this package for SSR bridge only in dev
-      const webEntry: any = await import('../../../../web/src/entry-server');
+      const webEntry: { resolveContext: (req: Request) => Promise<{ handler: unknown; context: unknown }>; createRouter: (handler: unknown, context: unknown) => unknown; pipeToNodeWritable: (reply: NodeJS.WritableStream, router: unknown, context: unknown) => void } = await import('../../../../web/src/entry-server');
       const { handler, context } = await webEntry.resolveContext(request);
 
       if (context instanceof Response) {
         const status = context.status;
         const headersObj: Record<string, string> = {};
-        context.headers.forEach((v, k) => (headersObj[k] = v));
+        context.headers.forEach((v, k) => {
+          headersObj[k] = v;
+        });
         reply.code(status).headers(headersObj);
         const buf = Buffer.from(await context.arrayBuffer());
         reply.send(buf);
         return;
       }
 
-      const { createRouter } = webEntry as any;
+      const { createRouter } = webEntry;
       const router = createRouter(handler, context);
       reply.header('Content-Type', 'text/html; charset=utf-8');
       reply.header('Cache-Control', 'no-store');
 
-      const { pipeToNodeWritable } = webEntry as any;
+      const { pipeToNodeWritable } = webEntry;
       pipeToNodeWritable(reply.raw, router, context);
-    } catch (error: any) {
+    } catch (error: unknown) {
       // Only log errors that aren't common browser noise
       const isBrowserNoise = req.url?.includes('favicon.ico') ||
         req.url?.startsWith('/.well-known/') ||
@@ -149,7 +148,7 @@ export class AppController {
         req.url?.includes('sitemap.xml');
 
       if (!isBrowserNoise) {
-        console.error('React Router error:', error.message);
+        console.error('React Router error:', error instanceof Error ? error.message : String(error));
       }
 
       // Return a simple 404 for unmatched routes
