@@ -8,324 +8,261 @@
   <img src="assets/logos/rr_logo_light.svg" alt="React Router Logo" width="120" height="120"/>
 </p>
 
-🚀 **The ultimate full-stack TypeScript framework** combining NestJS + React Router + Fastify + SSR
-
-<p align="center">
-  <strong>Combining the power of NestJS and React Router for a seamless full-stack experience</strong>
-</p>
-
-[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
-[![TypeScript](https://img.shields.io/badge/TypeScript-5.6+-blue.svg)](https://www.typescriptlang.org/)
-[![React Router](https://img.shields.io/badge/React%20Router-7.9+-61DAFB.svg)](https://reactrouter.com/)
-[![NestJS](https://img.shields.io/badge/NestJS-10.4+-E0234E.svg)](https://nestjs.com/)
+A starter monorepo that wires a NestJS server to a React Router 7 app with server-side rendering, Redis-backed session state, and shared workspace packages.
 
 </div>
 
-## ✨ Features
+## Status
 
-- ⚡ **Blazing fast** with Fastify and Vite
-- 🎯 **Type-safe** end-to-end with TypeScript
-- 🔄 **SSR + SPA** with React Router 7 Data Mode
-- 🏗️ **Enterprise-ready** with NestJS architecture
-- 🎨 **Beautiful UI** with Tailwind CSS
-- 📦 **Monorepo** with Turborepo
-- 🔧 **Modern tooling** with Biome for linting and formatting
-- 🗄️ **Database ready** with Drizzle ORM
-- 📊 **Caching** with Redis
-- 🚀 **Production ready** with Docker support
+This repo is a **starter / playground**, not a polished production template yet.
 
-## 🏗️ Architecture
+What is present today:
+- NestJS 10 on Fastify
+- React 18 + React Router 7 SSR bridge
+- Turborepo + pnpm workspace layout
+- Tailwind CSS 4 in the web app
+- Drizzle ORM package for PostgreSQL access
+- Redis integration for sessions and BullMQ demo jobs
+- A small demo app with login/logout, dashboard gating, contact form stub, stream demo, and queue demo endpoint
 
-This is a **monorepo** that combines:
+What is **not** fully baked yet:
+- No checked-in CI workflow
+- No top-level `docs/` directory
+- Docker/devcontainer flow is incomplete in the current repo state
+- The contact form is a stub
+- The current health endpoint checks Redis only, not PostgreSQL
 
-- **Backend**: NestJS with Fastify for high-performance APIs
-- **Frontend**: React Router 7 with server-side rendering
-- **Database**: Drizzle ORM with PostgreSQL
-- **Caching**: Redis for session management and caching
-- **Styling**: Tailwind CSS with a modern design system
-- **Build**: Vite for fast development and building
-- **Monorepo**: Turborepo for efficient builds and development
+## Repository Layout
 
-## 🚀 Quick Start
+```text
+nestjs-react-router/
+├── apps/
+│   ├── server/                 # NestJS + Fastify server and SSR bridge
+│   └── web/                    # React Router 7 app built with Vite
+├── packages/
+│   ├── db/                     # Drizzle/PostgreSQL package
+│   ├── redis/                  # Shared Redis client
+│   └── shared/                 # Shared helpers and schemas
+├── assets/                     # README assets/logos
+├── scripts/                    # Local setup helper script
+├── docker-compose.yml
+├── Dockerfile
+├── package.json
+├── pnpm-workspace.yaml
+└── turbo.json
+```
 
-### Prerequisites
+## Runtime Architecture
+
+### Server
+- `apps/server` runs NestJS on Fastify.
+- The server boots from `apps/server/src/main.ts`.
+- In development it listens on `http://localhost:3000` by default.
+- In production it defaults to port `8080` unless `PORT` is set.
+
+### Web app
+- `apps/web` builds a Vite client bundle into `apps/web/dist/client`.
+- The React Router app is rendered on the NestJS side through `apps/web/src/entry-server.tsx`.
+- The server serves the built client entry and CSS from `/static/...`.
+
+### State and infrastructure
+- Session state is stored in Redis.
+- BullMQ is configured against Redis and includes a demo queue/processor.
+- PostgreSQL is expected for the Drizzle package, but the sample app currently leans more heavily on Redis/session flows than DB-backed features.
+
+## Requirements
 
 - Node.js 18+
 - pnpm 9+
-- Docker (for PostgreSQL and Redis)
-- OR PostgreSQL and Redis installed locally
+- Redis running locally on `localhost:6379` unless you change env values
+- PostgreSQL running locally on `localhost:5432` if you want to use Drizzle commands such as `db:push`
 
-### Installation
+## Environment
 
-1. **Clone the repository**
+Copy the example file:
 
-   ```bash
-   git clone https://github.com/yourusername/nestjs-react-router.git
-   cd nestjs-react-router
-   ```
+```bash
+cp .env.example .env
+```
 
-2. **Install dependencies**
+Current example values:
+
+```env
+PORT=3000
+NODE_ENV=development
+DATABASE_URL=postgres://postgres:postgres@localhost:5432/appdb
+REDIS_URL=redis://localhost:6379
+SESSION_SECRET=dev-secret-change-me
+```
+
+Notes:
+- `REDIS_URL` is used by the shared Redis client.
+- BullMQ currently reads `REDIS_HOST` / `REDIS_PORT` / `REDIS_PASSWORD` / `REDIS_DB` in the Nest app module rather than parsing `REDIS_URL`.
+- `DATABASE_URL` is required for Drizzle commands and the shared DB package.
+
+## Local Development
+
+1. Install dependencies:
 
    ```bash
    pnpm install
    ```
 
-3. **Set up environment variables**
+2. Start Redis and PostgreSQL yourself.
+
+   The committed `docker-compose.yml` currently starts **Redis only** by default. The PostgreSQL service block is commented out, so you must either:
+   - run PostgreSQL locally, or
+   - uncomment/adapt the PostgreSQL service in `docker-compose.yml`.
+
+3. Create `.env` if you have not already:
 
    ```bash
    cp .env.example .env
-   # The .env file is already configured for Docker services
    ```
 
-4. **Start PostgreSQL and Redis (Choose one option)**
-
-   **Option A: Using Docker (Recommended)**
-   ```bash
-   # Start only the database services
-   docker compose up -d postgres redis
-   
-   # Wait for services to be ready (about 10-15 seconds)
-   docker compose ps
-   ```
-
-   **Option B: Local Installation**
-   ```bash
-   # If you have PostgreSQL and Redis installed locally
-   # Make sure they're running on ports 5432 and 6379
-   # Update .env file with your local connection strings
-   ```
-
-5. **Set up the database**
+4. If you want the DB package ready, push the schema:
 
    ```bash
    pnpm db:push
    ```
 
-6. **Start the development server**
+5. Start the dev stack:
 
    ```bash
    pnpm dev
    ```
 
-7. **Open your browser**
+6. Open:
 
-   ```
+   ```text
    http://localhost:3000
    ```
 
-### Quick Setup Test
+### What `pnpm dev` does
 
-To verify everything is working correctly, run our test script:
+The root dev script:
+- kills prior processes on ports `3000` and `5174`
+- stops prior Turbo / `tsx watch` processes when possible
+- runs Turbo dev for the server and web packages
 
-```bash
-# Option 1: Using pnpm script (recommended)
-pnpm test:setup
+The current package-level behavior is:
+- `apps/server`: `tsx watch src/main.ts`
+- `apps/web`: `vite build --watch`
 
-# Option 2: Direct script execution
-chmod +x scripts/test-setup.sh
-./scripts/test-setup.sh
-```
+That means the web app is built in watch mode while NestJS handles SSR and serves the built assets.
 
-This script will:
-- ✅ Check all prerequisites
-- ✅ Install dependencies
-- ✅ Set up environment variables
-- ✅ Start database services
-- ✅ Push database schema
-- ✅ Test application startup
-- ✅ Verify API endpoints
+## Available Commands
 
-### Troubleshooting
-
-**Port already in use?**
-```bash
-# Check what's using the ports
-lsof -ti:5432,6379
-
-# Kill processes if needed
-lsof -ti:5432,6379 | xargs kill -9
-
-# Or use different ports in docker-compose.yml
-```
-
-**Database connection issues?**
-```bash
-# Check if services are running
-docker compose ps
-
-# Check logs
-docker compose logs postgres
-docker compose logs redis
-
-# Restart services
-docker compose restart postgres redis
-```
-
-## 📁 Project Structure
-
-```
-nestjs-react-router/
-├── apps/
-│   ├── server/                 # NestJS backend application
-│   │   ├── src/
-│   │   │   ├── main.ts        # Application entry point
-│   │   │   ├── app.controller.ts
-│   │   │   ├── app.module.ts
-│   │   │   └── plugins/
-│   │   └── package.json
-│   └── web/                   # React Router frontend application
-│       ├── src/
-│       │   ├── entry-client.tsx
-│       │   ├── entry-server.tsx
-│       │   ├── routes.tsx
-│       │   └── index.css
-│       └── package.json
-├── packages/
-│   ├── db/                    # Database package with Drizzle ORM
-│   ├── redis/                 # Redis client package
-│   └── shared/                # Shared utilities and types
-├── package.json
-├── turbo.json
-├── biome.json
-└── README.md
-```
-
-## 🛠️ Available Scripts
-
-### Root Level Commands
+### Workspace
 
 ```bash
-# Development
-pnpm dev                    # Start development server
-
-# Building
-pnpm build                  # Build all packages
-
-# Code Quality
-pnpm lint                   # Lint all packages
-pnpm lint:fix              # Fix linting issues
-pnpm format                # Format code
-pnpm check                 # Run all checks
-pnpm check:fix             # Fix all issues
-
-# Type Checking
-pnpm typecheck             # Type check all packages
+pnpm dev
+pnpm build
+pnpm lint
+pnpm lint:fix
+pnpm format
+pnpm check
+pnpm check:fix
+pnpm typecheck
+pnpm clean
+pnpm kill
 ```
 
-### Package-Specific Commands
+### Database
 
 ```bash
-# Server (NestJS)
-pnpm --filter @nestjs-react-router/server dev
-pnpm --filter @nestjs-react-router/server build
-
-# Web (React Router)
-pnpm --filter @nestjs-react-router/web build
-pnpm --filter @nestjs-react-router/web preview
-
-# Database
-pnpm --filter @nestjs-react-router/db drizzle:push
-pnpm --filter @nestjs-react-router/db drizzle:studio
-```
-
-## 🎨 UI Components
-
-The project includes a modern design system built with:
-
-- **Tailwind CSS** for utility-first styling
-- **CSS Variables** for theming (light/dark mode support)
-- **Radix UI** for accessible components
-- **Class Variance Authority** for component variants
-- **Tailwind Merge** for conditional styling
-
-## 🗄️ Database
-
-The project uses **Drizzle ORM** with PostgreSQL:
-
-- **Type-safe** database queries
-- **Migrations** with Drizzle Kit
-- **Studio** for database management
-- **Connection pooling** for performance
-
-### Database Commands
-
-```bash
-# Generate migrations
-pnpm db:generate
-
-# Push schema changes
 pnpm db:push
-
-# Open Drizzle Studio
+pnpm db:generate
 pnpm db:studio
 ```
 
-## 🚀 Deployment
-
-### Docker
-
-The project includes Docker configuration for easy deployment:
+### Docker helpers
 
 ```bash
-# Build Docker image
-docker build -t nestjs-react-router .
-
-# Run with Docker Compose
-docker-compose up -d
+pnpm docker:up
+pnpm docker:down
+pnpm docker:build
+pnpm docker:logs
 ```
 
-### Environment Variables
+## Current App Surface
 
-Required environment variables:
+### Browser routes
+- `/`
+- `/stream`
+- `/contact`
+- `/dashboard`
+- `/test`
 
-```env
-# Database
-DATABASE_URL="postgresql://user:password@localhost:5432/nestjs_react_router"
+### HTTP endpoints
+- `GET /api/health` — Redis health check
+- `GET /api/session-debug` — inspect current session data
+- `GET /api/queue/add` — enqueue a demo BullMQ job
+- `POST /auth/login` — store `{ email }` in session
+- `POST /auth/logout` — clear session
+- `GET /auth/me` — return current session user
 
-# Redis
-REDIS_URL="redis://localhost:6379"
+### Auth model
 
-# Server
-PORT=3000
-NODE_ENV=production
+Auth is intentionally minimal right now:
+- no real user database lookup
+- login stores the submitted email in session
+- dashboard access is gated by session presence
+
+## Database Notes
+
+The `packages/db` package contains:
+- Drizzle config
+- a PostgreSQL client using `postgres`
+- sample `users` and `posts` schema definitions
+
+Use these commands from the repo root:
+
+```bash
+pnpm db:generate
+pnpm db:push
+pnpm db:studio
 ```
 
-## 🤝 Contributing
+## Redis and Queue Notes
 
-1. Fork the repository
-2. Create your feature branch (`git checkout -b feature/amazing-feature`)
-3. Commit your changes (`git commit -m 'Add some amazing feature'`)
-4. Push to the branch (`git push origin feature/amazing-feature`)
-5. Open a Pull Request
+Redis is used for:
+- session storage
+- BullMQ queue infrastructure
 
-### Development Guidelines
+A demo queue processor lives under `apps/server/src/modules/queue`.
 
-- Use **Biome** for linting and formatting
-- Follow **TypeScript** best practices
-- Write **meaningful commit messages**
-- Add **tests** for new features
-- Update **documentation** as needed
+## Setup Script Caveat
 
-## 📚 Learn More
+The repository includes `scripts/test-setup.sh` and the root command:
 
-- [NestJS Documentation](https://docs.nestjs.com/)
-- [React Router Documentation](https://reactrouter.com/)
-- [Drizzle ORM Documentation](https://orm.drizzle.team/)
-- [Tailwind CSS Documentation](https://tailwindcss.com/)
-- [Turborepo Documentation](https://turbo.build/repo)
+```bash
+pnpm test:setup
+```
 
-## 📄 License
+Treat this as a convenience script, not a guaranteed green end-to-end verifier. In the current repo state it assumes a PostgreSQL service is available on localhost and also attempts `docker compose up -d postgres redis`, while the committed Compose file only exposes Redis by default.
 
-This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
+## Docker Status
 
-## 🙏 Acknowledgments
+Docker-related files exist, but the Docker path should be treated as **work in progress**:
+- `Dockerfile` expects `pnpm-lock.yaml`, which is not currently checked into the repo
+- `docker-compose.yml` only has Redis enabled by default
+- the README previously overstated Docker readiness
 
-- [NestJS](https://nestjs.com/) for the amazing backend framework
-- [React Router](https://reactrouter.com/) for the modern routing solution
-- [Drizzle](https://orm.drizzle.team/) for the type-safe ORM
-- [Tailwind CSS](https://tailwindcss.com/) for the utility-first CSS framework
-- [Turborepo](https://turbo.build/) for the monorepo build system
+If you want a dependable local start today, use direct local services or update the Docker files before relying on them.
 
----
+## Related Docs
 
-**Built with ❤️ using modern web technologies**
+- Route-organization notes: `apps/web/src/routes/README.md`
+- Secrets guidance: `SECRETS_POLICY.md`
+
+## Contributing
+
+If you extend the starter:
+- keep docs aligned with actual runnable behavior
+- prefer updating scripts and infra examples alongside README changes
+- document whether a feature is demo-only or production-ready
+
+## License
+
+The repository README historically referenced MIT, but there is currently no checked-in `LICENSE` file in this repo. Add one if you want the licensing status to be explicit.

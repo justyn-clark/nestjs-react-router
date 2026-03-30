@@ -1,93 +1,44 @@
-# React Router 7 Routes Best Practices
+# React Router Route Notes
 
-This directory contains the route configuration following React Router 7 best practices.
+This directory holds the route helper modules used by the React Router 7 app.
 
-## Structure
+## Current Structure
 
-```
+```text
 routes/
-├── index.ts      # Re-exports loaders and actions
-├── loaders.ts    # All route loader functions
-├── actions.ts    # All route action functions
+├── index.ts      # Re-exports route helpers
+├── loaders.ts    # Loader functions
+├── actions.ts    # Action functions
 └── README.md     # This file
 ```
 
-## Best Practices Implemented
+The main route tree itself lives in `../routes.tsx`.
 
-### 1. Type Safety
+## What the current code does
 
-- All loaders and actions use proper TypeScript types (`LoaderFunctionArgs`, `ActionFunctionArgs`)
-- Type-safe data handling with proper validation
+- `loaders.ts`
+  - `rootLoader` fetches `/auth/me` and exposes the current session user plus an optional `message` query param
+  - `streamLoader` returns a small demo payload after a short delay
+  - `dashboardLoader` redirects to `/` with a message when no session user is present
 
-### 2. Separation of Concerns
+- `actions.ts`
+  - `rootAction` handles login and logout flows by calling Nest auth endpoints
+  - `contactAction` validates that an email exists, then returns a stub `{ ok: true }` response
+  - `dashboardAction` exists but is not currently wired into `routes.tsx`
 
-- Loaders are separated into `loaders.ts`
-- Actions are separated into `actions.ts`
-- Routes configuration in `routes.tsx` focuses on structure, not logic
+## Notes about current implementation
 
-### 3. Proper Response Handling
+- Logic is split out of `routes.tsx` into loader/action modules.
+- The route tree includes IDs for some routes (`root`, `stream`, `dashboard`, `contact`, `test`), but not every route uses one.
+- Auth is session-based and demo-oriented: login stores an email in session and dashboard access checks for session presence.
+- Error handling is provided by `components/ErrorBoundary.tsx`.
+- There is no schema-backed validation layer in these route helpers yet.
 
-- Use `Response.json()` for JSON responses
-- Use `Response.redirect()` for redirects
-- Proper status codes for error responses
+## Caveats
 
-### 4. Route IDs
+A few earlier documentation claims were broader than the code:
+- not every route has an ID
+- validation is mostly simple manual checks today
+- the contact flow is not connected to a real submission backend yet
 
-- All routes have unique IDs for better debugging and reference
-- IDs follow a consistent naming pattern
-
-### 5. Error Boundaries
-
-- Comprehensive error boundary component
-- Handles both route errors and general errors
-- User-friendly error messages
-
-### 6. Authentication Pattern
-
-- Dashboard route checks authentication in loader
-- Redirects to home with message if not authenticated
-- Login/logout actions handle session management
-
-### 7. Form Handling
-
-- Actions properly parse FormData
-- Type checking for form values
-- Error responses for invalid data
-
-## Example Patterns
-
-### Protected Route Loader
-
-```typescript
-export async function protectedLoader({ request }: LoaderFunctionArgs) {
-  const user = await checkAuth(request);
-  if (!user) {
-    return Response.redirect('/login');
-  }
-  return Response.json({ user });
-}
-```
-
-### Form Action
-
-```typescript
-export async function formAction({ request }: ActionFunctionArgs) {
-  const formData = await request.formData();
-  const email = formData.get('email');
-  
-  if (!email || typeof email !== 'string') {
-    return Response.json({ error: 'Email required' }, { status: 400 });
-  }
-  
-  // Process form...
-  return Response.json({ success: true });
-}
-```
-
-## Future Improvements
-
-1. **Middleware** - Add authentication middleware when React Router 7 supports it
-2. **Lazy Loading** - Implement route-level code splitting
-3. **Prefetching** - Add data prefetching for better UX
-4. **Caching** - Implement proper cache headers
-5. **Validation** - Add schema validation for form data
+If you expand this area, keep this file aligned with the real route behavior rather than idealized patterns.
