@@ -8,9 +8,7 @@
     "skipLibCheck": true,
     "baseUrl": ".",
     "paths": {
-      "@acme/shared/*": [
-        "packages/shared/src/*"
-      ]
+      "@acme/shared/*": ["packages/shared/src/*"]
     }
   }
 }

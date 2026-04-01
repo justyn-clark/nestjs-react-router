@@ -1,5 +1,5 @@
-import { Module } from '@nestjs/common';
 import { BullModule } from '@nestjs/bullmq';
+import { Module } from '@nestjs/common';
 import { DemoProcessor } from './demo.processor';
 
 @Module({

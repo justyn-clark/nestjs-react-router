@@ -1,15 +1,17 @@
 import { hydrateRoot } from 'react-dom/client';
-import { createBrowserRouter, RouterProvider } from 'react-router-dom';
-import { routes } from './routes';
+import type { HydrationState, RouteObject } from 'react-router';
+import { RouterProvider, createBrowserRouter } from 'react-router-dom';
 import './index.css';
+import { routes } from './routes.js';
 
-// Get hydration data from the server
 declare global {
-  var __staticRouterHydrationData: unknown;
+  var __staticRouterHydrationData: HydrationState | undefined;
 }
 
+const hydrationData = window.__staticRouterHydrationData;
+
 const router = createBrowserRouter(routes, {
-  hydrationData: window.__staticRouterHydrationData,
+  hydrationData,
 });
 
 const rootElement = document.getElementById('root');
@@ -17,19 +19,18 @@ if (rootElement) {
   hydrateRoot(rootElement, <RouterProvider router={router} />);
 }
 
-// Enable HMR for React components
 if (import.meta.hot) {
-  import.meta.hot.accept('./routes', (newRoutes) => {
-    if (newRoutes) {
-      // Recreate router with new routes
-      const newRouter = createBrowserRouter(newRoutes.routes, {
-        hydrationData: window.__staticRouterHydrationData,
+  import.meta.hot.accept('./routes', (module) => {
+    const nextRoutes = (module as { routes?: RouteObject[] } | undefined)?.routes;
+
+    if (nextRoutes) {
+      const newRouter = createBrowserRouter(nextRoutes, {
+        hydrationData,
       });
 
-      // Re-render with new router
-      const rootElement = document.getElementById('root');
-      if (rootElement) {
-        hydrateRoot(rootElement, <RouterProvider router={newRouter} />);
+      const currentRootElement = document.getElementById('root');
+      if (currentRootElement) {
+        hydrateRoot(currentRootElement, <RouterProvider router={newRouter} />);
       }
     }
   });

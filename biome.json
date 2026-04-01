@@ -60,10 +60,7 @@
   },
   "overrides": [
     {
-      "include": [
-        "*.ts",
-        "*.tsx"
-      ],
+      "include": ["*.ts", "*.tsx"],
       "linter": {
         "rules": {
           "correctness": {
@@ -73,9 +70,7 @@
       }
     },
     {
-      "include": [
-        "apps/server/**/*.ts"
-      ],
+      "include": ["apps/server/**/*.ts"],
       "linter": {
         "rules": {
           "correctness": {

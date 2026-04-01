@@ -5,13 +5,13 @@
     "moduleResolution": "Bundler",
     "jsx": "react-jsx",
     "outDir": "dist",
-    "rootDir": ".",
-    "types": ["node"],
+    "rootDir": "..",
+    "types": ["node", "vite/client"],
     "strict": true,
     "esModuleInterop": true,
     "skipLibCheck": true,
     "emitDecoratorMetadata": true,
     "experimentalDecorators": true
   },
-  "include": ["src"]
+  "include": ["src", "../web/src", "../web/vite-env.d.ts"]
 }

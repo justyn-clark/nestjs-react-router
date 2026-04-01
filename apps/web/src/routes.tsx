@@ -1,15 +1,15 @@
 import React from 'react';
 import type { RouteObject } from 'react-router';
-import { Layout } from './components/Layout';
-import { Home } from './components/Home';
-import { Stream } from './components/Stream';
-import { Dashboard } from './components/Dashboard';
 import { Contact } from './components/Contact';
-import { Test } from './components/Test';
+import { Dashboard } from './components/Dashboard';
 import ErrorBoundary from './components/ErrorBoundary';
+import { Home } from './components/Home';
+import { Layout } from './components/Layout';
+import { Stream } from './components/Stream';
+import { Test } from './components/Test';
 
-import { rootLoader, streamLoader, dashboardLoader } from './routes/loaders';
-import { rootAction, contactAction } from './routes/actions';
+import { contactAction, rootAction } from './routes/actions';
+import { dashboardLoader, rootLoader, streamLoader } from './routes/loaders';
 
 export const routes: RouteObject[] = [
   {

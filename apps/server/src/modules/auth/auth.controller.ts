@@ -1,5 +1,4 @@
-
-import { Controller, Post, Body, Res, Get, Req } from '@nestjs/common';
+import { Body, Controller, Get, Post, Req, Res } from '@nestjs/common';
 import type { FastifyReply, FastifyRequest } from 'fastify';
 
 interface SessionRequest extends FastifyRequest {
@@ -7,31 +6,31 @@ interface SessionRequest extends FastifyRequest {
   sessionId?: string;
 }
 
-interface SessionServer {
-  saveSession(req: FastifyRequest): Promise<void>;
-  destroySession(req: FastifyRequest, reply: FastifyReply): Promise<void>;
-}
-
 @Controller('auth')
 export class AuthController {
   @Post('login')
-  async login(@Body() body: { email?: string }, @Req() req: SessionRequest, @Res() reply: FastifyReply) {
+  async login(
+    @Body() body: { email?: string },
+    @Req() req: SessionRequest,
+    @Res() reply: FastifyReply
+  ) {
     const { email } = body || {};
     if (!email) {
       reply.code(400).send({ error: 'email required' });
       return;
     }
-    // naive: put user in session
+
     if (req.session) {
       req.session.user = { email };
     }
-    await (req.server as SessionServer).saveSession(req);
+
+    await req.server.saveSession(req);
     reply.send({ ok: true });
   }
 
   @Post('logout')
   async logout(@Req() req: SessionRequest, @Res() reply: FastifyReply) {
-    await (req.server as SessionServer).destroySession(req, reply);
+    await req.server.destroySession(req, reply);
     reply.send({ ok: true });
   }
 
@@ -45,7 +44,7 @@ export class AuthController {
   async loginGet(@Res() reply: FastifyReply) {
     reply.code(405).send({
       error: 'Method not allowed',
-      message: 'Use POST /auth/login with email in request body'
+      message: 'Use POST /auth/login with email in request body',
     });
   }
 
@@ -53,7 +52,7 @@ export class AuthController {
   async logoutGet(@Res() reply: FastifyReply) {
     reply.code(405).send({
       error: 'Method not allowed',
-      message: 'Use POST /auth/logout to logout'
+      message: 'Use POST /auth/logout to logout',
     });
   }
 }

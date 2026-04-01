@@ -1,51 +1,74 @@
 import * as React from 'react';
 
+const sections = [
+  {
+    title: 'Included',
+    items: [
+      'NestJS on Fastify',
+      'React Router 7 SSR bridge',
+      'Redis-backed sessions',
+      'PostgreSQL via Drizzle',
+      'BullMQ demo queue wiring',
+    ],
+  },
+  {
+    title: 'Verified',
+    items: [
+      'Health endpoint checks Redis and PostgreSQL',
+      'Contact submissions persist to PostgreSQL',
+      'Route loaders and actions have test coverage',
+      'Workspace builds and typechecks cleanly',
+    ],
+  },
+  {
+    title: 'Replace next',
+    items: [
+      'Demo auth with your real auth provider',
+      'Starter copy with product-specific content',
+      'Demo queue jobs with app workflows',
+      'Contact storage with CRM or support routing',
+    ],
+  },
+];
+
 export function Home() {
   return (
-    <div className="space-y-6">
-      <div className="text-center">
-        <h2 className="text-4xl font-bold text-foreground mb-4">
-          Welcome to React Router 7 + NestJS
-        </h2>
-        <p className="text-xl text-muted-foreground mb-8">
-          A modern full-stack application with server-side rendering, client-side navigation, and
-          beautiful UI.
+    <div className="space-y-8">
+      <section className="space-y-4">
+        <h2 className="text-2xl font-semibold text-slate-950">Starter overview</h2>
+        <p className="max-w-3xl text-sm leading-6 text-slate-600">
+          This template is meant to give you a working full-stack base without turning the homepage
+          into a marketing site. It is intentionally simple: app shell, session flow, SSR routing,
+          infrastructure hooks, and a few real endpoints you can extend.
         </p>
-        <p className="text-lg text-green-600 font-semibold">
-          🔥 Hot Module Replacement is working! (Updated at {new Date().toLocaleTimeString()}) -
-          Test 8
-        </p>
-      </div>
+      </section>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-        <div className="p-6 bg-gradient-to-br from-blue-50 to-indigo-50 border border-blue-200 rounded-lg">
-          <div className="w-12 h-12 bg-blue-600 rounded-lg flex items-center justify-center mb-4">
-            <span className="text-white text-xl">⚡</span>
+      <section className="grid gap-4 lg:grid-cols-3">
+        {sections.map((section) => (
+          <div key={section.title} className="rounded-lg border border-slate-200 bg-white p-5">
+            <h3 className="mb-3 text-sm font-semibold uppercase tracking-wide text-slate-900">
+              {section.title}
+            </h3>
+            <ul className="space-y-2 text-sm text-slate-600">
+              {section.items.map((item) => (
+                <li key={item} className="border-b border-slate-100 pb-2 last:border-b-0 last:pb-0">
+                  {item}
+                </li>
+              ))}
+            </ul>
           </div>
-          <h3 className="text-lg font-semibold text-gray-900 mb-2">Server-Side Rendering</h3>
-          <p className="text-gray-600">
-            Fast initial page loads with SSR powered by NestJS and React Router 7.
-          </p>
-        </div>
+        ))}
+      </section>
 
-        <div className="p-6 bg-gradient-to-br from-green-50 to-emerald-50 border border-green-200 rounded-lg">
-          <div className="w-12 h-12 bg-green-600 rounded-lg flex items-center justify-center mb-4">
-            <span className="text-white text-xl">🔄</span>
-          </div>
-          <h3 className="text-lg font-semibold text-gray-900 mb-2">Client Navigation</h3>
-          <p className="text-gray-600">Smooth client-side navigation without page refreshes.</p>
-        </div>
-
-        <div className="p-6 bg-gradient-to-br from-purple-50 to-pink-50 border border-purple-200 rounded-lg">
-          <div className="w-12 h-12 bg-purple-600 rounded-lg flex items-center justify-center mb-4">
-            <span className="text-white text-xl">🎨</span>
-          </div>
-          <h3 className="text-lg font-semibold text-gray-900 mb-2">Beautiful UI</h3>
-          <p className="text-gray-600">
-            Modern design with Tailwind CSS and thoughtful interactions.
-          </p>
-        </div>
-      </div>
+      <section className="rounded-lg border border-slate-200 bg-slate-50 p-5">
+        <h3 className="mb-3 text-sm font-semibold uppercase tracking-wide text-slate-900">
+          Quick start
+        </h3>
+        <pre className="overflow-x-auto text-sm leading-6 text-slate-700">{`cp .env.example .env
+pnpm install
+pnpm db:push
+pnpm dev`}</pre>
+      </section>
     </div>
   );
 }

@@ -23,7 +23,7 @@ The main route tree itself lives in `../routes.tsx`.
 
 - `actions.ts`
   - `rootAction` handles login and logout flows by calling Nest auth endpoints
-  - `contactAction` validates that an email exists, then returns a stub `{ ok: true }` response
+  - `contactAction` validates basic form input and posts to `POST /api/contact`
   - `dashboardAction` exists but is not currently wired into `routes.tsx`
 
 ## Notes about current implementation
@@ -32,13 +32,13 @@ The main route tree itself lives in `../routes.tsx`.
 - The route tree includes IDs for some routes (`root`, `stream`, `dashboard`, `contact`, `test`), but not every route uses one.
 - Auth is session-based and demo-oriented: login stores an email in session and dashboard access checks for session presence.
 - Error handling is provided by `components/ErrorBoundary.tsx`.
-- There is no schema-backed validation layer in these route helpers yet.
+- Contact submission validation is shared with the backend through the workspace schema package.
 
 ## Caveats
 
 A few earlier documentation claims were broader than the code:
 - not every route has an ID
-- validation is mostly simple manual checks today
-- the contact flow is not connected to a real submission backend yet
+- auth is still demo auth, not a full identity system
+- the contact flow now persists submissions, but it is still intentionally simple and not a CRM integration
 
 If you expand this area, keep this file aligned with the real route behavior rather than idealized patterns.

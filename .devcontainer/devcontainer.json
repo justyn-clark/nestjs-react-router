@@ -1,0 +1,15 @@
+{
+  "name": "nestjs-react-router",
+  "dockerComposeFile": "../docker-compose.yml",
+  "service": "app",
+  "workspaceFolder": "/workspace",
+  "shutdownAction": "stopCompose",
+  "overrideCommand": true,
+  "remoteUser": "node",
+  "postCreateCommand": "pnpm install",
+  "customizations": {
+    "vscode": {
+      "extensions": ["biomejs.biome", "esbenp.prettier-vscode", "bradlc.vscode-tailwindcss"]
+    }
+  }
+}

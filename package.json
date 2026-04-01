@@ -20,16 +20,22 @@
     "docker:down": "docker compose down",
     "docker:build": "docker compose build",
     "docker:logs": "docker compose logs -f",
-    "test:setup": "chmod +x scripts/test-setup.sh && ./scripts/test-setup.sh"
+    "test:setup": "chmod +x scripts/test-setup.sh && ./scripts/test-setup.sh",
+    "test": "turbo test",
+    "test:web": "pnpm --filter @nestjs-react-router/web test",
+    "test:shared": "pnpm --filter @nestjs-react-router/shared test",
+    "test:smoke": "tsx scripts/smoke-test.ts",
+    "start": "pnpm --filter @nestjs-react-router/server start",
+    "test:e2e": "node scripts/e2e-smoke.mjs",
+    "verify": "pnpm check && pnpm test && pnpm typecheck && pnpm build",
+    "docker:up:build": "docker compose up -d --build"
   },
   "devDependencies": {
     "@biomejs/biome": "^1.8.0",
     "turbo": "2.5.8",
     "prettier": "^3.3.3",
-    "@types/node": "^22.7.4"
+    "@types/node": "^22.7.4",
+    "tsx": "^4.19.1"
   },
-  "workspaces": [
-    "apps/*",
-    "packages/*"
-  ]
+  "workspaces": ["apps/*", "packages/*"]
 }

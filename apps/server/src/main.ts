@@ -31,7 +31,7 @@ async function bootstrap() {
       }
     );
 
-    await app.register(sessionPlugin);
+    await app.register(sessionPlugin as never);
 
     await app.listen(PORT, HOST);
     console.log(`Server on http://${HOST}:${PORT}`);

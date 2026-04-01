@@ -1,79 +1,28 @@
-# Multi-stage build for production
-FROM node:18-alpine AS base
-
-# Install pnpm
-RUN npm install -g pnpm@9
-
-# Set working directory
+FROM node:22-alpine AS base
+RUN npm install -g pnpm@9.7.0
 WORKDIR /app
 
-# Copy package files
-COPY package.json pnpm-lock.yaml pnpm-workspace.yaml ./
-COPY turbo.json ./
-
-# Copy all package.json files
-COPY apps/server/package.json ./apps/server/
-COPY apps/web/package.json ./apps/web/
-COPY packages/db/package.json ./packages/db/
-COPY packages/redis/package.json ./packages/redis/
-COPY packages/shared/package.json ./packages/shared/
-
-# Install dependencies
+FROM base AS deps
+COPY package.json pnpm-lock.yaml pnpm-workspace.yaml turbo.json ./
+COPY apps/server/package.json ./apps/server/package.json
+COPY apps/web/package.json ./apps/web/package.json
+COPY packages/db/package.json ./packages/db/package.json
+COPY packages/redis/package.json ./packages/redis/package.json
+COPY packages/shared/package.json ./packages/shared/package.json
 RUN pnpm install --frozen-lockfile
 
-# Copy source code
+FROM deps AS build
 COPY . .
-
-# Build stage
-FROM base AS build
-
-# Build all packages
 RUN pnpm build
 
-# Production stage
-FROM node:18-alpine AS production
-
-# Install pnpm
-RUN npm install -g pnpm@9
-
-# Set working directory
+FROM base AS production
+ENV NODE_ENV=production
 WORKDIR /app
-
-# Copy package files
-COPY package.json pnpm-lock.yaml pnpm-workspace.yaml ./
-COPY turbo.json ./
-
-# Copy all package.json files
-COPY apps/server/package.json ./apps/server/
-COPY apps/web/package.json ./apps/web/
-COPY packages/db/package.json ./packages/db/
-COPY packages/redis/package.json ./packages/redis/
-COPY packages/shared/package.json ./packages/shared/
-
-# Install production dependencies only
-RUN pnpm install --frozen-lockfile --prod
-
-# Copy built application
-COPY --from=build /app/apps/server/dist ./apps/server/dist
-COPY --from=build /app/apps/web/dist ./apps/web/dist
-COPY --from=build /app/packages/db/dist ./packages/db/dist
-COPY --from=build /app/packages/redis/dist ./packages/redis/dist
-COPY --from=build /app/packages/shared/dist ./packages/shared/dist
-
-# Create non-root user
-RUN addgroup -g 1001 -S nodejs
-RUN adduser -S nestjs -u 1001
-
-# Change ownership
-RUN chown -R nestjs:nodejs /app
-USER nestjs
-
-# Expose port
+COPY --from=deps /app/node_modules ./node_modules
+COPY --from=build /app/apps ./apps
+COPY --from=build /app/packages ./packages
+COPY --from=build /app/package.json ./package.json
+COPY --from=build /app/pnpm-workspace.yaml ./pnpm-workspace.yaml
+COPY --from=build /app/turbo.json ./turbo.json
 EXPOSE 3000
-
-# Health check
-HEALTHCHECK --interval=30s --timeout=3s --start-period=5s --retries=3 \
-  CMD node -e "require('http').get('http://localhost:3000/api/health', (res) => { process.exit(res.statusCode === 200 ? 0 : 1) })"
-
-# Start the application
-CMD ["node", "apps/server/dist/src/main.js"]
+CMD ["pnpm", "--filter", "@nestjs-react-router/server", "start"]

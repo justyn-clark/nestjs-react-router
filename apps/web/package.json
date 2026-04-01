@@ -10,7 +10,8 @@
     "lint": "npx biome lint .",
     "lint:fix": "npx biome lint --write .",
     "format": "npx biome format --write .",
-    "typecheck": "tsc -p tsconfig.json"
+    "typecheck": "tsc -p tsconfig.json",
+    "test": "tsx --test src/**/*.test.ts"
   },
   "dependencies": {
     "@radix-ui/react-slot": "^1.0.2",

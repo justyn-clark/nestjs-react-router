@@ -10,7 +10,8 @@
     "typecheck": "tsc -p tsconfig.json",
     "lint": "npx biome lint .",
     "lint:fix": "npx biome lint --write .",
-    "format": "npx biome format --write ."
+    "format": "npx biome format --write .",
+    "test": "tsx --test src/**/*.test.ts"
   },
   "dependencies": {
     "zod": "^3.23.8",

@@ -1,6 +1,6 @@
+import { join } from 'node:path';
 import { createServer as createViteServer } from 'vite';
 import type { ViteDevServer } from 'vite';
-import { join } from 'node:path';
 
 let vite: ViteDevServer | undefined;
 

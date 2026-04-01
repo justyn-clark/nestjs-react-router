@@ -4,13 +4,10 @@
     "jsx": "react-jsx",
     "module": "ESNext",
     "moduleResolution": "Bundler",
-    "baseUrl": ".",
-    "paths": {
-      "@acme/shared/*": ["../../packages/shared/src/*"]
-    },
     "types": ["vite/client", "node"],
     "strict": true,
-    "skipLibCheck": true
+    "skipLibCheck": true,
+    "noEmit": true
   },
   "include": ["src", "vite-env.d.ts"]
 }

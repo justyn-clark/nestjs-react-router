@@ -2,52 +2,78 @@
 
 # NestJS React Router
 
+[![CI](https://img.shields.io/github/actions/workflow/status/justyn-clark/nestjs-react-router/ci.yml?branch=main&label=ci)](https://github.com/justyn-clark/nestjs-react-router/actions/workflows/ci.yml)
+[![Release](https://img.shields.io/github/v/release/justyn-clark/nestjs-react-router?display_name=tag)](https://github.com/justyn-clark/nestjs-react-router/releases)
+[![Tag](https://img.shields.io/github/v/tag/justyn-clark/nestjs-react-router)](https://github.com/justyn-clark/nestjs-react-router/tags)
+[![License](https://img.shields.io/github/license/justyn-clark/nestjs-react-router)](./LICENSE)
+[![Stack](https://img.shields.io/badge/stack-NestJS%20%7C%20React%20Router%207%20%7C%20PostgreSQL%20%7C%20Redis-0f172a)](#runtime-architecture)
+
 <p align="center">
   <img src="assets/logos/nestjs-logo.svg" alt="NestJS Logo" width="120" height="120"/>
   &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
   <img src="assets/logos/rr_logo_light.svg" alt="React Router Logo" width="120" height="120"/>
 </p>
 
-A starter monorepo that wires a NestJS server to a React Router 7 app with server-side rendering, Redis-backed session state, and shared workspace packages.
+A starter monorepo that wires a NestJS server to a React Router 7 app with server-side rendering, Redis-backed session state, PostgreSQL persistence, and shared workspace packages.
 
 </div>
 
 ## Status
 
-This repo is a **starter / playground**, not a polished production template yet.
+This repo is intended to be a truthful, opinionated starter rather than a flashy scaffold.
 
-What is present today:
+Included today:
 - NestJS 10 on Fastify
 - React 18 + React Router 7 SSR bridge
 - Turborepo + pnpm workspace layout
 - Tailwind CSS 4 in the web app
 - Drizzle ORM package for PostgreSQL access
-- Redis integration for sessions and BullMQ demo jobs
-- A small demo app with login/logout, dashboard gating, contact form stub, stream demo, and queue demo endpoint
+- Redis-backed sessions and BullMQ demo queue
+- Contact form submission persisted to PostgreSQL
+- Health endpoint that checks both Redis and PostgreSQL
+- Checked-in CI workflow
+- `docs/` directory, devcontainer config, and explicit MIT license
+- end-to-end smoke coverage against a running built app
 
-What is **not** fully baked yet:
-- No checked-in CI workflow
-- No top-level `docs/` directory
-- Docker/devcontainer flow is incomplete in the current repo state
-- The contact form is a stub
-- The current health endpoint checks Redis only, not PostgreSQL
+Still intentionally minimal:
+- auth is session-demo auth, not a production identity system
+- queue processing is demo-level scaffolding
+- the starter favors deterministic verification over aggressive build caching
+
+## What this starter is
+
+- A server-rendered full-stack app where NestJS hosts and renders the React Router app
+- A monorepo with explicit seams for server logic, web UI, persistence, Redis-backed state, and shared schemas
+- A starter that tries to stay legible to both humans and agents
+
+## What this starter is not
+
+- Two independently deployed applications pretending to be one product
+- A design-forward marketing shell
+- A fully finished auth system
+- A queue platform with production workflows already built in
 
 ## Repository Layout
 
 ```text
 nestjs-react-router/
+├── .devcontainer/             # Devcontainer setup
+├── .github/workflows/         # CI workflow
 ├── apps/
-│   ├── server/                 # NestJS + Fastify server and SSR bridge
-│   └── web/                    # React Router 7 app built with Vite
+│   ├── server/                # NestJS + Fastify server and SSR bridge
+│   └── web/                   # React Router 7 app built with Vite
+├── docs/                      # Architecture, local-dev, release, and agent-legibility docs
 ├── packages/
-│   ├── db/                     # Drizzle/PostgreSQL package
-│   ├── redis/                  # Shared Redis client
-│   └── shared/                 # Shared helpers and schemas
-├── assets/                     # README assets/logos
-├── scripts/                    # Local setup helper script
+│   ├── db/                    # Drizzle/PostgreSQL package
+│   ├── redis/                 # Shared Redis client
+│   └── shared/                # Shared helpers and schemas
+├── assets/                    # README assets/logos
+├── scripts/                   # Smoke and e2e verification helpers
 ├── docker-compose.yml
 ├── Dockerfile
+├── LICENSE
 ├── package.json
+├── pnpm-lock.yaml
 ├── pnpm-workspace.yaml
 └── turbo.json
 ```
@@ -56,7 +82,8 @@ nestjs-react-router/
 
 ### Server
 - `apps/server` runs NestJS on Fastify.
-- The server boots from `apps/server/src/main.ts`.
+- The server boots from `apps/server/src/main.ts` in development.
+- The built production path starts from `apps/server/dist/server/src/main.js` via `pnpm start`.
 - In development it listens on `http://localhost:3000` by default.
 - In production it defaults to port `8080` unless `PORT` is set.
 
@@ -64,18 +91,18 @@ nestjs-react-router/
 - `apps/web` builds a Vite client bundle into `apps/web/dist/client`.
 - The React Router app is rendered on the NestJS side through `apps/web/src/entry-server.tsx`.
 - The server serves the built client entry and CSS from `/static/...`.
+- Runtime shape is one Nest-hosted full-stack app, not two separate deployed apps inside one container.
 
 ### State and infrastructure
 - Session state is stored in Redis.
 - BullMQ is configured against Redis and includes a demo queue/processor.
-- PostgreSQL is expected for the Drizzle package, but the sample app currently leans more heavily on Redis/session flows than DB-backed features.
+- PostgreSQL is used by the Drizzle package and stores contact submissions.
 
 ## Requirements
 
 - Node.js 18+
 - pnpm 9+
-- Redis running locally on `localhost:6379` unless you change env values
-- PostgreSQL running locally on `localhost:5432` if you want to use Drizzle commands such as `db:push`
+- Docker Desktop or local PostgreSQL + Redis
 
 ## Environment
 
@@ -93,63 +120,51 @@ NODE_ENV=development
 DATABASE_URL=postgres://postgres:postgres@localhost:5432/appdb
 REDIS_URL=redis://localhost:6379
 SESSION_SECRET=dev-secret-change-me
+NRR_APP_PORT=3000
+NRR_POSTGRES_PORT=5432
+NRR_REDIS_PORT=6379
+APP_INTERNAL_ORIGIN=http://127.0.0.1:3000
 ```
-
-Notes:
-- `REDIS_URL` is used by the shared Redis client.
-- BullMQ currently reads `REDIS_HOST` / `REDIS_PORT` / `REDIS_PASSWORD` / `REDIS_DB` in the Nest app module rather than parsing `REDIS_URL`.
-- `DATABASE_URL` is required for Drizzle commands and the shared DB package.
 
 ## Local Development
 
-1. Install dependencies:
+### Local services already available
 
-   ```bash
-   pnpm install
-   ```
+```bash
+cp .env.example .env
+pnpm install
+pnpm db:push
+pnpm dev
+```
 
-2. Start Redis and PostgreSQL yourself.
+Then open `http://localhost:3000`.
 
-   The committed `docker-compose.yml` currently starts **Redis only** by default. The PostgreSQL service block is commented out, so you must either:
-   - run PostgreSQL locally, or
-   - uncomment/adapt the PostgreSQL service in `docker-compose.yml`.
+### Compose-backed services
 
-3. Create `.env` if you have not already:
+If ports `3000`, `5432`, or `6379` are already occupied on your machine, override the host ports first.
 
-   ```bash
-   cp .env.example .env
-   ```
+```bash
+cp .env.example .env
+export NRR_APP_PORT=3300
+export NRR_POSTGRES_PORT=55432
+export NRR_REDIS_PORT=56379
+pnpm docker:up
+DATABASE_URL=postgres://postgres:postgres@localhost:${NRR_POSTGRES_PORT}/appdb pnpm db:push
+pnpm start
+```
 
-4. If you want the DB package ready, push the schema:
+Then open `http://localhost:${NRR_APP_PORT}`.
 
-   ```bash
-   pnpm db:push
-   ```
+### Full compose app path
 
-5. Start the dev stack:
+To bring up the compose-defined app container as well:
 
-   ```bash
-   pnpm dev
-   ```
-
-6. Open:
-
-   ```text
-   http://localhost:3000
-   ```
-
-### What `pnpm dev` does
-
-The root dev script:
-- kills prior processes on ports `3000` and `5174`
-- stops prior Turbo / `tsx watch` processes when possible
-- runs Turbo dev for the server and web packages
-
-The current package-level behavior is:
-- `apps/server`: `tsx watch src/main.ts`
-- `apps/web`: `vite build --watch`
-
-That means the web app is built in watch mode while NestJS handles SSR and serves the built assets.
+```bash
+export NRR_APP_PORT=3300
+export NRR_POSTGRES_PORT=55432
+export NRR_REDIS_PORT=56379
+pnpm docker:up:build
+```
 
 ## Available Commands
 
@@ -157,6 +172,7 @@ That means the web app is built in watch mode while NestJS handles SSR and serve
 
 ```bash
 pnpm dev
+pnpm start
 pnpm build
 pnpm lint
 pnpm lint:fix
@@ -164,6 +180,9 @@ pnpm format
 pnpm check
 pnpm check:fix
 pnpm typecheck
+pnpm test
+pnpm test:e2e
+pnpm verify
 pnpm clean
 pnpm kill
 ```
@@ -180,6 +199,7 @@ pnpm db:studio
 
 ```bash
 pnpm docker:up
+pnpm docker:up:build
 pnpm docker:down
 pnpm docker:build
 pnpm docker:logs
@@ -195,14 +215,15 @@ pnpm docker:logs
 - `/test`
 
 ### HTTP endpoints
-- `GET /api/health` — Redis health check
-- `GET /api/session-debug` — inspect current session data
-- `GET /api/queue/add` — enqueue a demo BullMQ job
-- `POST /auth/login` — store `{ email }` in session
-- `POST /auth/logout` — clear session
-- `GET /auth/me` — return current session user
+- `GET /api/health` - Redis + PostgreSQL health check
+- `POST /api/contact` - validate and persist contact submissions
+- `GET /api/session-debug` - inspect current session data
+- `GET /api/queue/add` - enqueue a demo BullMQ job
+- `POST /auth/login` - store `{ email }` in session
+- `POST /auth/logout` - clear session
+- `GET /auth/me` - return current session user
 
-### Auth model
+## Auth model
 
 Auth is intentionally minimal right now:
 - no real user database lookup
@@ -213,8 +234,9 @@ Auth is intentionally minimal right now:
 
 The `packages/db` package contains:
 - Drizzle config
-- a PostgreSQL client using `postgres`
+- a PostgreSQL client with lazy connection helpers
 - sample `users` and `posts` schema definitions
+- a `contact_submissions` table used by the starter contact flow
 
 Use these commands from the repo root:
 
@@ -224,35 +246,32 @@ pnpm db:push
 pnpm db:studio
 ```
 
-## Redis and Queue Notes
+## Docker and Devcontainer
 
-Redis is used for:
-- session storage
-- BullMQ queue infrastructure
+The Docker path is wired for local bring-up:
+- `docker-compose.yml` starts PostgreSQL, Redis, and the app
+- Docker host ports can be overridden with `NRR_APP_PORT`, `NRR_POSTGRES_PORT`, and `NRR_REDIS_PORT`
+- `APP_INTERNAL_ORIGIN` can be used when SSR should call the app through an internal container-local address
+- `Dockerfile` builds the monorepo and starts the built server path
+- `.devcontainer/devcontainer.json` is included for containerized editor workflows
 
-A demo queue processor lives under `apps/server/src/modules/queue`.
+## Agent legibility
 
-## Setup Script Caveat
+See `docs/agent-legibility.md`.
 
-The repository includes `scripts/test-setup.sh` and the root command:
-
-```bash
-pnpm test:setup
-```
-
-Treat this as a convenience script, not a guaranteed green end-to-end verifier. In the current repo state it assumes a PostgreSQL service is available on localhost and also attempts `docker compose up -d postgres redis`, while the committed Compose file only exposes Redis by default.
-
-## Docker Status
-
-Docker-related files exist, but the Docker path should be treated as **work in progress**:
-- `Dockerfile` expects `pnpm-lock.yaml`, which is not currently checked into the repo
-- `docker-compose.yml` only has Redis enabled by default
-- the README previously overstated Docker readiness
-
-If you want a dependable local start today, use direct local services or update the Docker files before relying on them.
+This starter tries to keep the following obvious to both humans and AI agents:
+- where the app starts
+- where routes and boundaries live
+- where shared schemas live
+- how to run, verify, and extend the app
+- what is demo-only versus intended as a production seam
 
 ## Related Docs
 
+- Architecture: `docs/architecture.md`
+- Agent legibility: `docs/agent-legibility.md`
+- Local setup: `docs/local-development.md`
+- Release checklist: `docs/release-checklist.md`
 - Route-organization notes: `apps/web/src/routes/README.md`
 - Secrets guidance: `SECRETS_POLICY.md`
 
@@ -260,9 +279,10 @@ If you want a dependable local start today, use direct local services or update 
 
 If you extend the starter:
 - keep docs aligned with actual runnable behavior
-- prefer updating scripts and infra examples alongside README changes
+- prefer deterministic verification over hidden build magic
 - document whether a feature is demo-only or production-ready
+- preserve agent-legible naming and boundaries when adding new surfaces
 
 ## License
 
-The repository README historically referenced MIT, but there is currently no checked-in `LICENSE` file in this repo. Add one if you want the licensing status to be explicit.
+MIT. See `LICENSE`.
