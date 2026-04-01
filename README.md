@@ -2,11 +2,13 @@
 
 # NestJS React Router
 
-[![CI](https://img.shields.io/github/actions/workflow/status/justyn-clark/nestjs-react-router/ci.yml?branch=main&label=ci)](https://github.com/justyn-clark/nestjs-react-router/actions/workflows/ci.yml)
-[![Release](https://img.shields.io/github/v/release/justyn-clark/nestjs-react-router?display_name=tag)](https://github.com/justyn-clark/nestjs-react-router/releases)
-[![Tag](https://img.shields.io/github/v/tag/justyn-clark/nestjs-react-router)](https://github.com/justyn-clark/nestjs-react-router/tags)
-[![License](https://img.shields.io/github/license/justyn-clark/nestjs-react-router)](./LICENSE)
-[![Stack](https://img.shields.io/badge/stack-NestJS%20%7C%20React%20Router%207%20%7C%20PostgreSQL%20%7C%20Redis-0f172a)](#runtime-architecture)
+<p align="center">
+  <a href="https://github.com/justyn-clark/nestjs-react-router/actions/workflows/ci.yml"><img alt="CI" src="https://img.shields.io/github/actions/workflow/status/justyn-clark/nestjs-react-router/ci.yml?branch=main&label=ci"></a>
+  <a href="https://github.com/justyn-clark/nestjs-react-router/releases"><img alt="Release" src="https://img.shields.io/github/v/release/justyn-clark/nestjs-react-router?display_name=tag"></a>
+  <a href="https://github.com/justyn-clark/nestjs-react-router/tags"><img alt="Tag" src="https://img.shields.io/github/v/tag/justyn-clark/nestjs-react-router"></a>
+  <a href="./LICENSE"><img alt="License" src="https://img.shields.io/github/license/justyn-clark/nestjs-react-router"></a>
+  <a href="#runtime-architecture"><img alt="Stack" src="https://img.shields.io/badge/stack-NestJS%20%7C%20React%20Router%207%20%7C%20PostgreSQL%20%7C%20Redis-0f172a"></a>
+</p>
 
 <p align="center">
   <img src="assets/logos/nestjs-logo.svg" alt="NestJS Logo" width="120" height="120"/>
