@@ -5,21 +5,20 @@ export function Contact() {
   const res = useActionData() as { ok?: boolean; error?: string } | undefined;
 
   return (
-    <div className="grid gap-6 lg:grid-cols-[0.8fr_1.2fr]">
-      <section className="border border-slate-200 bg-slate-50 p-5">
-        <h2 className="text-xl font-semibold text-slate-950">Contact flow</h2>
-        <p className="mt-3 text-sm leading-6 text-slate-600">
-          This route exists to prove the starter can accept validated input from the app layer and
-          persist a record through the backend into PostgreSQL.
+    <div className="grid gap-6 lg:grid-cols-[0.85fr_1.15fr]">
+      <section className="border border-slate-300 p-5">
+        <div className="mb-3 text-xs uppercase tracking-[0.18em] text-slate-500">Form boundary</div>
+        <h2 className="text-xl font-semibold">Contact flow</h2>
+        <p className="mt-4 text-sm leading-6 text-slate-600">
+          This route demonstrates a plain but real application seam: collect input in the web layer,
+          validate it, send it to the backend, and persist it in PostgreSQL.
         </p>
       </section>
 
-      <section className="border border-slate-200 bg-white p-5">
+      <section className="border border-slate-300 p-5">
         <div className="mb-5">
-          <h3 className="text-lg font-semibold text-slate-950">Submit a message</h3>
-          <p className="mt-2 text-sm text-slate-600">
-            Replace this with lead capture, support intake, or another workflow for your app.
-          </p>
+          <div className="mb-3 text-xs uppercase tracking-[0.18em] text-slate-500">Submission</div>
+          <h3 className="text-lg font-semibold">Submit a message</h3>
         </div>
 
         <Form method="post" className="space-y-4">
@@ -32,7 +31,7 @@ export function Contact() {
               name="name"
               type="text"
               placeholder="Jane Doe"
-              className="w-full border border-slate-300 bg-white px-3 py-2 text-slate-900 outline-none focus:border-slate-500"
+              className="min-h-10 w-full border border-slate-300 px-3 text-slate-900 outline-none focus:border-slate-900"
               required
             />
           </div>
@@ -46,7 +45,7 @@ export function Contact() {
               name="email"
               type="email"
               placeholder="you@example.com"
-              className="w-full border border-slate-300 bg-white px-3 py-2 text-slate-900 outline-none focus:border-slate-500"
+              className="min-h-10 w-full border border-slate-300 px-3 text-slate-900 outline-none focus:border-slate-900"
               required
             />
           </div>
@@ -60,14 +59,14 @@ export function Contact() {
               name="message"
               placeholder="Describe what you want to build or support."
               rows={6}
-              className="w-full border border-slate-300 bg-white px-3 py-2 text-slate-900 outline-none focus:border-slate-500"
+              className="w-full border border-slate-300 px-3 py-2 text-slate-900 outline-none focus:border-slate-900"
               required
             />
           </div>
 
           <button
             type="submit"
-            className="bg-slate-900 px-4 py-2 text-sm font-medium text-white hover:bg-slate-800"
+            className="inline-flex min-h-10 items-center border border-slate-900 bg-slate-900 px-4 text-sm font-medium text-white hover:bg-slate-800"
           >
             Save submission
           </button>
@@ -77,7 +76,6 @@ export function Contact() {
               Submission saved successfully.
             </div>
           )}
-
           {res?.error && (
             <div className="border border-red-300 bg-red-50 px-4 py-3 text-sm text-red-900">
               {res.error}

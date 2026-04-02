@@ -6,23 +6,21 @@ export default function ErrorBoundary() {
 
   if (isRouteErrorResponse(error)) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-slate-50 to-blue-50 flex items-center justify-center">
-        <div className="max-w-md mx-auto p-6">
-          <div className="bg-white rounded-lg shadow-lg p-8 text-center">
-            <div className="w-16 h-16 bg-red-100 rounded-full flex items-center justify-center mx-auto mb-4">
-              <span className="text-red-600 text-2xl">⚠️</span>
-            </div>
-            <h1 className="text-2xl font-bold text-gray-900 mb-2">
-              {error.status} {error.statusText}
-            </h1>
-            <p className="text-gray-600 mb-6">{error.data}</p>
-            <a
-              href="/"
-              className="inline-flex items-center px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition-colors"
-            >
-              Go back home
-            </a>
-          </div>
+      <div className="min-h-screen bg-white px-4 py-8 text-slate-950">
+        <div className="mx-auto max-w-2xl border border-slate-300 p-6">
+          <div className="mb-3 text-xs uppercase tracking-[0.18em] text-slate-500">Route error</div>
+          <h1 className="text-2xl font-semibold">
+            {error.status} {error.statusText}
+          </h1>
+          <p className="mt-4 text-sm leading-6 text-slate-600">
+            {String(error.data ?? 'The route returned an error response.')}
+          </p>
+          <a
+            href="/"
+            className="mt-6 inline-flex min-h-10 items-center border border-slate-900 bg-slate-900 px-4 text-sm font-medium text-white hover:bg-slate-800"
+          >
+            Go back home
+          </a>
         </div>
       </div>
     );
@@ -30,42 +28,35 @@ export default function ErrorBoundary() {
 
   if (error instanceof Error) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-slate-50 to-blue-50 flex items-center justify-center">
-        <div className="max-w-md mx-auto p-6">
-          <div className="bg-white rounded-lg shadow-lg p-8 text-center">
-            <div className="w-16 h-16 bg-red-100 rounded-full flex items-center justify-center mx-auto mb-4">
-              <span className="text-red-600 text-2xl">⚠️</span>
-            </div>
-            <h1 className="text-2xl font-bold text-gray-900 mb-2">Error</h1>
-            <p className="text-gray-600 mb-4">{error.message}</p>
-            <a
-              href="/"
-              className="inline-flex items-center px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition-colors"
-            >
-              Go back home
-            </a>
+      <div className="min-h-screen bg-white px-4 py-8 text-slate-950">
+        <div className="mx-auto max-w-2xl border border-slate-300 p-6">
+          <div className="mb-3 text-xs uppercase tracking-[0.18em] text-slate-500">
+            Runtime error
           </div>
+          <h1 className="text-2xl font-semibold">Application error</h1>
+          <p className="mt-4 text-sm leading-6 text-slate-600">{error.message}</p>
+          <a
+            href="/"
+            className="mt-6 inline-flex min-h-10 items-center border border-slate-900 bg-slate-900 px-4 text-sm font-medium text-white hover:bg-slate-800"
+          >
+            Go back home
+          </a>
         </div>
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-50 to-blue-50 flex items-center justify-center">
-      <div className="max-w-md mx-auto p-6">
-        <div className="bg-white rounded-lg shadow-lg p-8 text-center">
-          <div className="w-16 h-16 bg-red-100 rounded-full flex items-center justify-center mx-auto mb-4">
-            <span className="text-red-600 text-2xl">⚠️</span>
-          </div>
-          <h1 className="text-2xl font-bold text-gray-900 mb-2">Unknown Error</h1>
-          <p className="text-gray-600 mb-6">Something unexpected happened.</p>
-          <a
-            href="/"
-            className="inline-flex items-center px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition-colors"
-          >
-            Go back home
-          </a>
-        </div>
+    <div className="min-h-screen bg-white px-4 py-8 text-slate-950">
+      <div className="mx-auto max-w-2xl border border-slate-300 p-6">
+        <div className="mb-3 text-xs uppercase tracking-[0.18em] text-slate-500">Unknown error</div>
+        <h1 className="text-2xl font-semibold">Something unexpected happened</h1>
+        <a
+          href="/"
+          className="mt-6 inline-flex min-h-10 items-center border border-slate-900 bg-slate-900 px-4 text-sm font-medium text-white hover:bg-slate-800"
+        >
+          Go back home
+        </a>
       </div>
     </div>
   );

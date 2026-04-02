@@ -42,6 +42,7 @@ Use this if you want:
 - health endpoint covering Redis and PostgreSQL
 - CI, devcontainer config, and release docs
 - end-to-end smoke coverage against a running built app
+- a tech stack map for modern and agent-legible application building
 
 ## Intentional seams
 
@@ -142,6 +143,7 @@ pnpm docker:down
 - Architecture: `docs/architecture.md`
 - Local development: `docs/local-development.md`
 - Agent legibility: `docs/agent-legibility.md`
+- Tech stack map: `docs/tech-stack-map.md`
 - Release checklist: `docs/release-checklist.md`
 - Route notes: `apps/web/src/routes/README.md`
 - Secrets guidance: `SECRETS_POLICY.md`
