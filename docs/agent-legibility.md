@@ -7,7 +7,8 @@ This starter treats agent legibility as a first-class quality, not an accidental
 An AI agent should be able to quickly infer:
 
 - where the app starts
-- where routes live
+- where route manifests live
+- where route modules live
 - where server boundaries are
 - where schemas and contracts live
 - how to run the app
@@ -24,7 +25,14 @@ An AI agent should be able to quickly infer:
 - Web SSR entry: `apps/web/src/entry-server.tsx`
 - Web client entry: `apps/web/src/entry-client.tsx`
 
-### 2. Clear package boundaries
+### 2. Route manifest and module boundaries
+
+- `apps/web/src/routes.tsx` is a short manifest
+- route modules live in `apps/web/src/modules/<feature>/routes/`
+- route helper composition lives in `apps/web/src/routes/config.ts`
+- the manifest should stay declarative and short
+
+### 3. Clear package boundaries
 
 - `apps/server` owns HTTP, SSR orchestration, session handling, and queue hooks
 - `apps/web` owns route tree, UI, loaders, and actions
@@ -32,13 +40,13 @@ An AI agent should be able to quickly infer:
 - `packages/redis` owns Redis wiring
 - `packages/shared` owns shared schemas and helpers
 
-### 3. Shared contracts over hidden assumptions
+### 4. Shared contracts over hidden assumptions
 
 - validation schemas live in shared packages when both server and web use them
 - health checks expose dependency status explicitly
 - smoke scripts check visible behavior, not only internal implementation
 
-### 4. Deterministic verification
+### 5. Deterministic verification
 
 Preferred verification flow:
 
@@ -60,7 +68,7 @@ PORT=${NRR_APP_PORT} NODE_ENV=production DATABASE_URL=postgres://postgres:postgr
 SMOKE_BASE_URL=http://127.0.0.1:${NRR_APP_PORT} pnpm test:e2e
 ```
 
-### 5. Demo surfaces are labeled
+### 6. Demo surfaces are labeled
 
 Current demo-only areas:
 - auth

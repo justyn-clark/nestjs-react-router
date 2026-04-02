@@ -16,7 +16,7 @@
   <img src="assets/logos/rr_logo_light.svg" alt="React Router Logo" width="120" height="120"/>
 </p>
 
-A truthful, opinionated starter where NestJS hosts and renders a React Router 7 app with SSR, PostgreSQL persistence, Redis-backed state, and shared workspace packages.
+A truthful, opinionated starter where NestJS 11 hosts and renders a React Router 7 app with SSR, React 19, PostgreSQL persistence, Redis-backed state, and shared workspace packages.
 
 </div>
 
@@ -31,9 +31,10 @@ Use this if you want:
 
 ## What it includes
 
-- NestJS 10 on Fastify
-- React 18 + React Router 7 SSR bridge
+- NestJS 11 on Fastify 5
+- React 19 + React Router 7 SSR bridge
 - pnpm workspace + Turborepo layout
+- route-module manifest pattern for feature-oriented routing
 - PostgreSQL package with Drizzle schema and helpers
 - Redis-backed sessions
 - BullMQ demo queue wiring
@@ -90,6 +91,7 @@ pnpm docker:up:build
 
 ```bash
 pnpm verify
+pnpm start
 pnpm test:e2e
 ```
 
@@ -127,6 +129,7 @@ HTTP endpoints:
 pnpm dev
 pnpm start
 pnpm verify
+pnpm start
 pnpm test:e2e
 pnpm db:push
 pnpm docker:up

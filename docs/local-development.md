@@ -2,7 +2,7 @@
 
 ## Prerequisites
 
-- Node.js 18+
+- Node.js 22 recommended
 - pnpm 9+
 - Docker Desktop or local PostgreSQL + Redis
 
@@ -51,6 +51,6 @@ pnpm docker:down
 
 ## Notes
 
-- `pnpm start` runs the built production app path.
+- `pnpm start` runs the built production app path from `apps/server/dist/apps/server/src/main.js`.
 - `pnpm dev` runs the development path.
 - `pnpm test:e2e` is an end-to-end smoke script against a running app instance.

@@ -1,6 +1,6 @@
 # Architecture
 
-This starter combines a NestJS Fastify server with a React Router 7 app that is rendered and served through the server.
+This starter combines a NestJS 11 Fastify server with a React 19 + React Router 7 app that is rendered and served through the server.
 
 ## Runtime shape
 
@@ -15,7 +15,7 @@ The server is the runtime entrypoint. React Router is rendered through that serv
 ## Packages
 
 - `apps/server`: NestJS entrypoint, SSR bridge, auth/session endpoints, health endpoint, and BullMQ demo queue.
-- `apps/web`: React Router 7 application built with Vite.
+- `apps/web`: React 19 + React Router 7 application built with Vite.
 - `packages/db`: Drizzle ORM package for PostgreSQL schema and health checks.
 - `packages/redis`: shared Redis client for sessions and queue infrastructure.
 - `packages/shared`: shared schemas and helpers used across the monorepo.
@@ -33,6 +33,12 @@ The server is the runtime entrypoint. React Router is rendered through that serv
 - BullMQ uses Redis.
 - Contact submissions are stored in PostgreSQL via Drizzle.
 - `/api/health` checks both Redis and PostgreSQL.
+
+## Routing notes
+
+- `apps/web/src/routes.tsx` is a small manifest, not an inline route soup file.
+- route modules live under `apps/web/src/modules/<feature>/routes/`.
+- the route manifest composes modules using small helpers instead of centralizing every route concern in one place.
 
 ## Build notes
 
