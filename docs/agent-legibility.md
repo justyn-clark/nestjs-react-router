@@ -20,7 +20,7 @@ An AI agent should be able to quickly infer:
 ### 1. Explicit entrypoints
 
 - Development server entry: `apps/server/src/main.ts`
-- Built production entry: `apps/server/dist/server/src/main.js` via `pnpm start`
+- Built production entry: `apps/server/dist/apps/server/src/main.js` via `pnpm start`
 - Web SSR entry: `apps/web/src/entry-server.tsx`
 - Web client entry: `apps/web/src/entry-client.tsx`
 

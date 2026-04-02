@@ -1,6 +1,5 @@
 import { BullModule } from '@nestjs/bullmq';
 import { Module } from '@nestjs/common';
-import { ConfigModule } from '@nestjs/config';
 import { AuthController } from '../auth/auth.controller';
 import { ContactController } from '../contact/contact.controller';
 import { QueueModule } from '../queue/queue.module';
@@ -32,9 +31,6 @@ function getRedisConnection() {
 
 @Module({
   imports: [
-    ConfigModule.forRoot({
-      isGlobal: true,
-    }),
     BullModule.forRoot({
       connection: getRedisConnection(),
       defaultJobOptions: {

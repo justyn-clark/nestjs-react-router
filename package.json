@@ -37,5 +37,11 @@
     "@types/node": "^22.7.4",
     "tsx": "^4.19.1"
   },
-  "workspaces": ["apps/*", "packages/*"]
+  "workspaces": ["apps/*", "packages/*"],
+  "pnpm": {
+    "overrides": {
+      "fastify": "^5.8.4",
+      "path-to-regexp": "^8.4.0"
+    }
+  }
 }
