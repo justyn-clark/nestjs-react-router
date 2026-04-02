@@ -1,53 +1,18 @@
-import React from 'react';
-import type { RouteObject } from 'react-router';
-import { Contact } from './components/Contact';
-import { Dashboard } from './components/Dashboard';
-import ErrorBoundary from './components/ErrorBoundary';
-import { Home } from './components/Home';
-import { Layout } from './components/Layout';
-import { Stream } from './components/Stream';
-import { Test } from './components/Test';
+import * as contactRoute from './modules/contact/routes/contact.route';
+import * as dashboardRoute from './modules/dashboard/routes/dashboard.route';
+import * as homeRoute from './modules/root/routes/home.route';
+import * as rootRoute from './modules/root/routes/root.route';
+import * as streamRoute from './modules/stream/routes/stream.route';
+import * as testRoute from './modules/test/routes/test.route';
+import type { AppRouteConfig } from './routes/config';
+import { index, layout, route } from './routes/config';
 
-import { contactAction, rootAction } from './routes/actions';
-import { dashboardLoader, rootLoader, streamLoader } from './routes/loaders';
-
-export const routes: RouteObject[] = [
-  {
-    id: 'root',
-    path: '/',
-    loader: rootLoader,
-    action: rootAction,
-    Component: Layout,
-    errorElement: <ErrorBoundary />,
-    children: [
-      {
-        index: true,
-        Component: Home,
-      },
-      {
-        id: 'stream',
-        path: 'stream',
-        loader: streamLoader,
-        Component: Stream,
-      },
-      {
-        id: 'dashboard',
-        path: 'dashboard',
-        loader: dashboardLoader,
-        action: rootAction,
-        Component: Dashboard,
-      },
-      {
-        id: 'contact',
-        path: 'contact',
-        action: contactAction,
-        Component: Contact,
-      },
-      {
-        id: 'test',
-        path: 'test',
-        Component: Test,
-      },
-    ],
-  },
-];
+export const routes = [
+  layout(rootRoute, [
+    index(homeRoute),
+    route('stream', streamRoute),
+    route('dashboard', dashboardRoute),
+    route('contact', contactRoute),
+    route('test', testRoute),
+  ]),
+] satisfies AppRouteConfig;
