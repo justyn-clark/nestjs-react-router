@@ -2,6 +2,7 @@ import { BullModule } from '@nestjs/bullmq';
 import { Module } from '@nestjs/common';
 import { AuthController } from '../auth/auth.controller';
 import { ContactController } from '../contact/contact.controller';
+import { ControlPlaneModule } from '../control-plane/control-plane.module';
 import { QueueModule } from '../queue/queue.module';
 import { AppController } from './app.controller';
 
@@ -40,6 +41,7 @@ function getRedisConnection() {
         backoff: 2000,
       },
     }),
+    ControlPlaneModule,
     QueueModule,
   ],
   controllers: [AuthController, ContactController, AppController],

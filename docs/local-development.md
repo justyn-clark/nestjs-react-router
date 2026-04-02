@@ -49,6 +49,14 @@ pnpm docker:logs
 pnpm docker:down
 ```
 
+## Control-plane notes
+
+When the app is running, the web shell exposes:
+- a slash-command palette
+- recent activity feed
+- task/run surface
+- realtime updates from `/api/control-plane/events`
+
 ## Notes
 
 - `pnpm start` runs the built production app path from `apps/server/dist/apps/server/src/main.js`.

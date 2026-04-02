@@ -33,6 +33,13 @@ Role:
 - route model
 - loader/action model
 - SSR route execution model
+- UI-level control-plane surface
+
+
+Role:
+- route model
+- loader/action model
+- SSR route execution model
 
 Why it matters:
 - route modules make application behavior easier to understand and evolve
@@ -55,6 +62,7 @@ Role:
 - session state
 - queue state
 - async job execution seam
+- visible task/run surface backing
 
 Why it matters:
 - modern applications often need ephemeral state and background work
@@ -83,6 +91,16 @@ In an agentic-native world, good application structure should help agents answer
 - what is demo-only and what is production-intended?
 
 This starter tries to answer those questions by structure, not by explanation alone.
+
+## Control-plane ideas
+
+This starter now includes a minimal control plane in the web shell:
+- slash-command palette
+- activity/event feed
+- task/run surface
+- realtime event stream
+
+This is meant to model a future where the UI acts as a companion control layer for backend and terminal work rather than pretending everything important happens only in dashboard cards.
 
 ## Evolution path
 

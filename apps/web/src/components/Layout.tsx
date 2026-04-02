@@ -8,11 +8,16 @@ import {
   useLocation,
   useNavigation,
 } from 'react-router';
+import type { ActivityEvent, ControlPlaneSummary, TaskRun } from '../lib/control-plane';
+import { ActivityFeed } from './ActivityFeed';
+import { CommandPalette } from './CommandPalette';
+import { TaskRuns } from './TaskRuns';
 
 interface LayoutData {
   msg: string;
   user: { email: string } | null;
   message: string | null;
+  controlPlane: ControlPlaneSummary;
 }
 
 const navItems = [
@@ -43,10 +48,54 @@ export function Layout() {
   const navigation = useNavigation();
   const location = useLocation();
   const actionData = useActionData() as { error?: string } | undefined;
+  const [paletteOpen, setPaletteOpen] = React.useState(false);
+  const [activity, setActivity] = React.useState<ActivityEvent[]>(data.controlPlane.activity);
+  const [tasks, setTasks] = React.useState<TaskRun[]>(data.controlPlane.tasks);
+
+  React.useEffect(() => {
+    function openPalette() {
+      setPaletteOpen(true);
+    }
+
+    window.addEventListener('starter-command-palette:open', openPalette);
+    return () => window.removeEventListener('starter-command-palette:open', openPalette);
+  }, []);
+
+  React.useEffect(() => {
+    const source = new EventSource('/api/control-plane/events');
+
+    source.onmessage = (event) => {
+      const payload = JSON.parse(event.data) as
+        | { kind?: 'activity'; event?: ActivityEvent }
+        | { kind?: 'task'; task?: TaskRun }
+        | { type?: 'hello' };
+
+      if ('kind' in payload && payload.kind === 'activity' && payload.event) {
+        const nextEvent = payload.event;
+        setActivity((current) => [nextEvent, ...current].slice(0, 12));
+      }
+
+      if ('kind' in payload && payload.kind === 'task' && payload.task) {
+        const nextTask = payload.task;
+        setTasks((current) => {
+          const next = [nextTask, ...current.filter((task) => task.id !== nextTask.id)];
+          return next.slice(0, 12);
+        });
+      }
+    };
+
+    return () => source.close();
+  }, []);
 
   return (
     <div className="min-h-screen bg-white text-slate-950">
-      <div className="mx-auto max-w-6xl px-4 py-4 sm:px-6 lg:px-8">
+      <CommandPalette
+        open={paletteOpen}
+        onClose={() => setPaletteOpen(false)}
+        commands={data.controlPlane.commands}
+      />
+
+      <div className="mx-auto max-w-7xl px-4 py-4 sm:px-6 lg:px-8">
         <div className="border border-slate-300">
           <header className="border-b border-slate-300">
             <div className="grid gap-0 lg:grid-cols-[1.3fr_0.7fr]">
@@ -62,8 +111,15 @@ export function Layout() {
               </div>
 
               <div className="p-5">
-                <div className="mb-3 text-xs uppercase tracking-[0.18em] text-slate-500">
-                  Session surface
+                <div className="mb-3 flex items-center justify-between gap-3 text-xs uppercase tracking-[0.18em] text-slate-500">
+                  <span>Session surface</span>
+                  <button
+                    type="button"
+                    onClick={() => setPaletteOpen(true)}
+                    className="border border-slate-300 px-2 py-1 text-[11px] text-slate-700 hover:bg-slate-50"
+                  >
+                    / Commands
+                  </button>
                 </div>
                 {data.user ? (
                   <div className="space-y-3">
@@ -102,12 +158,12 @@ export function Layout() {
             </div>
           </header>
 
-          <div className="grid gap-0 lg:grid-cols-[220px_minmax(0,1fr)]">
-            <aside className="border-b border-slate-300 p-4 lg:border-b-0 lg:border-r">
+          <div className="grid gap-0 xl:grid-cols-[220px_minmax(0,1fr)_340px]">
+            <aside className="border-b border-slate-300 p-4 xl:border-b-0 xl:border-r">
               <div className="mb-3 text-xs uppercase tracking-[0.18em] text-slate-500">
                 Navigation
               </div>
-              <nav className="flex flex-wrap gap-2 lg:flex-col">
+              <nav className="flex flex-wrap gap-2 xl:flex-col">
                 {navItems.map((item) => (
                   <NavLinkItem
                     key={item.to}
@@ -159,6 +215,16 @@ export function Layout() {
                 <Outlet />
               </main>
             </section>
+
+            <aside className="border-t border-slate-300 p-5 xl:border-l xl:border-t-0">
+              <div className="mb-4 text-xs uppercase tracking-[0.18em] text-slate-500">
+                Control plane
+              </div>
+              <div className="space-y-4">
+                <TaskRuns tasks={tasks} />
+                <ActivityFeed events={activity} />
+              </div>
+            </aside>
           </div>
         </div>
       </div>

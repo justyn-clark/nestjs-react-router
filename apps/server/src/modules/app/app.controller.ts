@@ -4,9 +4,10 @@ import { pathToFileURL } from 'node:url';
 import { checkDatabaseHealth } from '@nestjs-react-router/db';
 import { redis } from '@nestjs-react-router/redis';
 import { InjectQueue } from '@nestjs/bullmq';
-import { All, Controller, Get, Req, Res } from '@nestjs/common';
+import { All, Controller, Get, Inject, Req, Res } from '@nestjs/common';
 import type { Queue } from 'bullmq';
 import type { FastifyReply, FastifyRequest } from 'fastify';
+import { ControlPlaneService } from '../control-plane/control-plane.service';
 
 interface SessionRequest extends FastifyRequest {
   session: Record<string, unknown> | null;
@@ -41,8 +42,10 @@ function resolveStaticAssetPath(requestUrl: string) {
 
 async function loadWebEntry() {
   const webEntryPath = firstExistingPath([
+    join(process.cwd(), 'apps/server/dist/apps/web/src/entry-server.js'),
     join(process.cwd(), 'apps/server/dist/web/src/entry-server.js'),
     join(process.cwd(), 'apps/web/src/entry-server.tsx'),
+    join(process.cwd(), 'dist/apps/web/src/entry-server.js'),
     join(process.cwd(), 'dist/web/src/entry-server.js'),
     join(process.cwd(), '../web/src/entry-server.tsx'),
   ]);
@@ -52,7 +55,10 @@ async function loadWebEntry() {
 
 @Controller()
 export class AppController {
-  constructor(@InjectQueue('demo') private demoQueue: Queue) {}
+  constructor(
+    @InjectQueue('demo') private demoQueue: Queue,
+    @Inject(ControlPlaneService) private readonly controlPlane: ControlPlaneService
+  ) {}
 
   @Get('/api/session-debug')
   async sess(@Req() req: SessionRequest, @Res() reply: FastifyReply) {
@@ -61,8 +67,27 @@ export class AppController {
 
   @Get('/api/queue/add')
   async addJob(@Res() reply: FastifyReply) {
-    const job = await this.demoQueue.add('echo', { ts: Date.now() });
-    reply.send({ enqueued: job.id });
+    const task = this.controlPlane.createTask('demo-job', {
+      source: 'api.queue.add',
+    });
+
+    const job = await this.demoQueue.add('echo', { ts: Date.now(), taskId: task.id });
+
+    this.controlPlane.updateTask(task.id, {
+      status: 'queued',
+      metadata: {
+        jobId: job.id,
+      },
+    });
+
+    this.controlPlane.recordEvent({
+      type: 'task.demo.queued',
+      message: `Demo job ${job.id} enqueued.`,
+      level: 'info',
+      metadata: { taskId: task.id },
+    });
+
+    reply.send({ enqueued: job.id, taskId: task.id });
   }
 
   @Get('/api/health')
@@ -185,6 +210,11 @@ export class AppController {
         req.url?.includes('sitemap.xml');
 
       if (!isBrowserNoise) {
+        this.controlPlane.recordEvent({
+          type: 'route.error',
+          message: 'Route handling failed.',
+          level: 'error',
+        });
         console.error(
           'React Router error:',
           error instanceof Error ? error.message : String(error)

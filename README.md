@@ -43,6 +43,7 @@ Use this if you want:
 - CI, devcontainer config, and release docs
 - end-to-end smoke coverage against a running built app
 - a tech stack map for modern and agent-legible application building
+- a starter control plane with slash-command palette, activity feed, task runs, and realtime events
 
 ## Intentional seams
 
@@ -108,6 +109,13 @@ It is not two independently deployed apps pretending to be one product.
 
 ## Main routes and endpoints
 
+The web shell now includes a small control-plane layer:
+- slash-command palette
+- realtime activity feed
+- task/run surface
+- app-native control actions such as enqueueing the demo job
+
+
 Browser routes:
 - `/`
 - `/stream`
@@ -117,6 +125,8 @@ Browser routes:
 
 HTTP endpoints:
 - `GET /api/health`
+- `GET /api/control-plane/summary`
+- `GET /api/control-plane/events`
 - `POST /api/contact`
 - `GET /api/session-debug`
 - `GET /api/queue/add`

@@ -1,5 +1,6 @@
-import { Body, Controller, Get, Post, Req, Res } from '@nestjs/common';
+import { Body, Controller, Get, Inject, Post, Req, Res } from '@nestjs/common';
 import type { FastifyReply, FastifyRequest } from 'fastify';
+import { ControlPlaneService } from '../control-plane/control-plane.service';
 
 interface SessionRequest extends FastifyRequest {
   session: Record<string, unknown> | null;
@@ -8,6 +9,8 @@ interface SessionRequest extends FastifyRequest {
 
 @Controller('auth')
 export class AuthController {
+  constructor(@Inject(ControlPlaneService) private readonly controlPlane: ControlPlaneService) {}
+
   @Post('login')
   async login(
     @Body() body: { email?: string },
@@ -25,12 +28,26 @@ export class AuthController {
     }
 
     await req.server.saveSession(req);
+    this.controlPlane.recordEvent({
+      type: 'auth.login',
+      message: `${email} signed in through demo auth.`,
+      level: 'success',
+    });
     reply.send({ ok: true });
   }
 
   @Post('logout')
   async logout(@Req() req: SessionRequest, @Res() reply: FastifyReply) {
+    const email =
+      typeof req.session?.user === 'object' && req.session?.user && 'email' in req.session.user
+        ? String(req.session.user.email)
+        : 'Unknown user';
     await req.server.destroySession(req, reply);
+    this.controlPlane.recordEvent({
+      type: 'auth.logout',
+      message: `${email} signed out.`,
+      level: 'info',
+    });
     reply.send({ ok: true });
   }
 

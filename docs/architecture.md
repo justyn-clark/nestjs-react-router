@@ -33,6 +33,7 @@ The server is the runtime entrypoint. React Router is rendered through that serv
 - BullMQ uses Redis.
 - Contact submissions are stored in PostgreSQL via Drizzle.
 - `/api/health` checks both Redis and PostgreSQL.
+- A lightweight control-plane service exposes recent activity, task runs, and realtime events for the web shell.
 
 ## Routing notes
 
@@ -45,6 +46,17 @@ The server is the runtime entrypoint. React Router is rendered through that serv
 - `apps/web` builds browser assets into `apps/web/dist/client`.
 - `apps/server` also compiles the SSR entry and route tree into its own `dist` tree so the built server can render pages.
 - The starter currently favors deterministic verification over aggressive Turbo caching. This is intentional until the build flow is further simplified.
+
+## Control-plane surface
+
+The web shell now includes a minimal app-native control plane:
+
+- slash-command palette
+- recent activity feed
+- task/run surface
+- realtime event stream via `/api/control-plane/events`
+
+This is intended as a practical seam for agent-native and operations-aware application design, not as decorative dashboard chrome.
 
 ## Starter intent
 

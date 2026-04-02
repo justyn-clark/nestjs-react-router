@@ -1,17 +1,23 @@
 import type { LoaderFunctionArgs } from 'react-router';
 import { appUrl } from '../lib/app-url';
+import type { ControlPlaneSummary } from '../lib/control-plane';
 
 export async function rootLoader({ request }: LoaderFunctionArgs) {
   const url = new URL(request.url);
-  const me = await fetch(appUrl('/auth/me', request), {
-    headers: { cookie: request.headers.get('cookie') || '' },
-  });
+  const [me, controlPlane] = await Promise.all([
+    fetch(appUrl('/auth/me', request), {
+      headers: { cookie: request.headers.get('cookie') || '' },
+    }),
+    fetch(appUrl('/api/control-plane/summary', request)),
+  ]);
   const userData = await me.json();
+  const summary = (await controlPlane.json()) as ControlPlaneSummary;
 
   return Response.json({
     msg: 'SSR, sessions, Redis, PostgreSQL, and shared packages are wired and running.',
     user: userData.user,
     message: url.searchParams.get('message'),
+    controlPlane: summary,
   });
 }
 

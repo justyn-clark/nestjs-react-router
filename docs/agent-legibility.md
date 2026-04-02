@@ -42,6 +42,9 @@ An AI agent should be able to quickly infer:
 
 ### 4. Shared contracts over hidden assumptions
 
+- control-plane endpoints expose recent activity, tasks, and commands explicitly
+- realtime event flow is visible through `/api/control-plane/events`
+
 - validation schemas live in shared packages when both server and web use them
 - health checks expose dependency status explicitly
 - smoke scripts check visible behavior, not only internal implementation
@@ -72,7 +75,7 @@ SMOKE_BASE_URL=http://127.0.0.1:${NRR_APP_PORT} pnpm test:e2e
 
 Current demo-only areas:
 - auth
-- queue processing
+- queue processing semantics beyond the demo task flow
 
 Agents should treat these as starter seams, not as complete product implementations.
 
