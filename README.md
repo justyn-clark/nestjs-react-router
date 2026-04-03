@@ -114,6 +114,7 @@ The web shell now includes a small control-plane layer:
 - realtime activity feed
 - task/run surface
 - app-native control actions such as enqueueing the demo job
+- PostgreSQL-backed persistence for recent task runs and activity events
 
 
 Browser routes:

@@ -55,6 +55,7 @@ The web shell now includes a minimal app-native control plane:
 - recent activity feed
 - task/run surface
 - realtime event stream via `/api/control-plane/events`
+- recent task runs and activity events persist in PostgreSQL and are hydrated on startup
 
 This is intended as a practical seam for agent-native and operations-aware application design, not as decorative dashboard chrome.
 

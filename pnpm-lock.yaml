@@ -69,6 +69,9 @@ importers:
       clsx:
         specifier: ^2.1.1
         version: 2.1.1
+      drizzle-orm:
+        specifier: ^0.45.2
+        version: 0.45.2(pg@8.20.0)(postgres@3.4.8)
       fastify:
         specifier: ^5.8.4
         version: 5.8.4

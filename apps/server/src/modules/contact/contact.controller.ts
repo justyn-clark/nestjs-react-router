@@ -26,12 +26,16 @@ export class ContactController {
       createdAt: schema.contactSubmissions.createdAt,
     });
 
-    this.controlPlane.recordEvent({
-      type: 'contact.submitted',
-      message: `Contact submission stored for ${parsed.data.email}.`,
-      level: 'success',
-      metadata: { submissionId: submission.id },
-    });
+    try {
+      await this.controlPlane.recordEvent({
+        type: 'contact.submitted',
+        message: `Contact submission stored for ${parsed.data.email}.`,
+        level: 'success',
+        metadata: { submissionId: submission.id },
+      });
+    } catch (error) {
+      console.error('Failed to record contact submission event:', error);
+    }
 
     reply.code(201).send({
       ok: true,

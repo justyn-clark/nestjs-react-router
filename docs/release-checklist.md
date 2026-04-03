@@ -16,6 +16,7 @@ Use this checklist before publishing the starter.
 - [ ] submit the contact form and confirm a row lands in `contact_submissions`
 - [ ] hit `/api/health` and confirm Redis + PostgreSQL report healthy
 - [ ] hit `/api/queue/add` and confirm a demo job enqueues cleanly
+- [ ] restart the app and confirm recent task/activity control-plane data hydrates from PostgreSQL
 - [ ] run `pnpm test:e2e` against the built app
 
 ## Docker verification

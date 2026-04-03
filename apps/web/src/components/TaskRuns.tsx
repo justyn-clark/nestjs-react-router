@@ -8,6 +8,28 @@ const statusStyles: Record<TaskRun['status'], string> = {
   failed: 'text-red-700',
 };
 
+function renderTimestamp(label: string, value?: string | null) {
+  if (!value) return null;
+
+  return (
+    <div>
+      {label}: {new Date(value).toLocaleTimeString()}
+    </div>
+  );
+}
+
+function renderMetadataValue(label: string, value: unknown) {
+  if (value === undefined || value === null || value === '') {
+    return null;
+  }
+
+  return (
+    <div>
+      {label}: {String(value)}
+    </div>
+  );
+}
+
 export function TaskRuns({ tasks }: { tasks: TaskRun[] }) {
   return (
     <section className="border border-slate-300 p-5">
@@ -24,10 +46,22 @@ export function TaskRuns({ tasks }: { tasks: TaskRun[] }) {
                   >
                     {task.status}
                   </div>
+                  {task.sourceCommand && (
+                    <div className="mt-1 font-mono text-xs text-slate-500">
+                      {task.sourceCommand}
+                    </div>
+                  )}
                 </div>
                 <div className="text-xs text-slate-500">
                   {new Date(task.updatedAt).toLocaleTimeString()}
                 </div>
+              </div>
+              <div className="mt-2 space-y-1 text-xs text-slate-500">
+                {renderTimestamp('Created', task.createdAt)}
+                {renderTimestamp('Started', task.startedAt)}
+                {renderTimestamp('Completed', task.completedAt)}
+                {renderTimestamp('Failed', task.failedAt)}
+                {renderMetadataValue('Job', task.metadata?.jobId)}
               </div>
             </div>
           ))

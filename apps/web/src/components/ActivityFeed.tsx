@@ -8,6 +8,18 @@ const levelStyles: Record<ActivityEvent['level'], string> = {
   error: 'text-red-700',
 };
 
+function renderMetadataValue(label: string, value: unknown) {
+  if (value === undefined || value === null || value === '') {
+    return null;
+  }
+
+  return (
+    <div>
+      {label}: {String(value)}
+    </div>
+  );
+}
+
 export function ActivityFeed({ events }: { events: ActivityEvent[] }) {
   return (
     <section className="border border-slate-300 p-5">
@@ -27,6 +39,13 @@ export function ActivityFeed({ events }: { events: ActivityEvent[] }) {
               <div className="mt-1 text-xs uppercase tracking-[0.14em] text-slate-400">
                 {event.type}
               </div>
+              {(event.taskRunId || event.metadata) && (
+                <div className="mt-1 space-y-1 text-xs text-slate-500">
+                  {renderMetadataValue('Task', event.taskRunId)}
+                  {renderMetadataValue('Job', event.metadata?.jobId)}
+                  {renderMetadataValue('Submission', event.metadata?.submissionId)}
+                </div>
+              )}
             </div>
           ))
         ) : (

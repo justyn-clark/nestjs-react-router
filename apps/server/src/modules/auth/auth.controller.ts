@@ -28,11 +28,17 @@ export class AuthController {
     }
 
     await req.server.saveSession(req);
-    this.controlPlane.recordEvent({
-      type: 'auth.login',
-      message: `${email} signed in through demo auth.`,
-      level: 'success',
-    });
+
+    try {
+      await this.controlPlane.recordEvent({
+        type: 'auth.login',
+        message: `${email} signed in through demo auth.`,
+        level: 'success',
+      });
+    } catch (error) {
+      console.error('Failed to record auth login event:', error);
+    }
+
     reply.send({ ok: true });
   }
 
@@ -43,11 +49,17 @@ export class AuthController {
         ? String(req.session.user.email)
         : 'Unknown user';
     await req.server.destroySession(req, reply);
-    this.controlPlane.recordEvent({
-      type: 'auth.logout',
-      message: `${email} signed out.`,
-      level: 'info',
-    });
+
+    try {
+      await this.controlPlane.recordEvent({
+        type: 'auth.logout',
+        message: `${email} signed out.`,
+        level: 'info',
+      });
+    } catch (error) {
+      console.error('Failed to record auth logout event:', error);
+    }
+
     reply.send({ ok: true });
   }
 

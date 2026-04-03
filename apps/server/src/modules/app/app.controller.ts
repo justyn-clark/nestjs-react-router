@@ -67,27 +67,58 @@ export class AppController {
 
   @Get('/api/queue/add')
   async addJob(@Res() reply: FastifyReply) {
-    const task = this.controlPlane.createTask('demo-job', {
-      source: 'api.queue.add',
-    });
-
-    const job = await this.demoQueue.add('echo', { ts: Date.now(), taskId: task.id });
-
-    this.controlPlane.updateTask(task.id, {
-      status: 'queued',
+    const task = await this.controlPlane.createTask('demo-job', {
+      sourceCommand: '/enqueue-demo-job',
       metadata: {
-        jobId: job.id,
+        source: 'api.queue.add',
       },
     });
 
-    this.controlPlane.recordEvent({
-      type: 'task.demo.queued',
-      message: `Demo job ${job.id} enqueued.`,
-      level: 'info',
-      metadata: { taskId: task.id },
-    });
+    try {
+      const job = await this.demoQueue.add('echo', { ts: Date.now(), taskId: task.id });
 
-    reply.send({ enqueued: job.id, taskId: task.id });
+      await this.controlPlane.updateTask(task.id, {
+        status: 'queued',
+        metadata: {
+          jobId: job.id,
+        },
+      });
+
+      await this.controlPlane.recordEvent({
+        type: 'task.demo.queued',
+        message: `Demo job ${job.id} enqueued.`,
+        level: 'info',
+        taskRunId: task.id,
+        metadata: {
+          taskId: task.id,
+          jobId: job.id,
+        },
+      });
+
+      reply.send({ enqueued: job.id, taskId: task.id });
+    } catch (error) {
+      await this.controlPlane.updateTask(task.id, {
+        status: 'failed',
+        metadata: {
+          error: error instanceof Error ? error.message : String(error),
+        },
+      });
+
+      await this.controlPlane.recordEvent({
+        type: 'task.demo.enqueue_failed',
+        message: 'Demo job failed to enqueue.',
+        level: 'error',
+        taskRunId: task.id,
+        metadata: {
+          taskId: task.id,
+          error: error instanceof Error ? error.message : String(error),
+        },
+      });
+
+      reply.code(500).send({
+        error: 'Failed to enqueue demo job',
+      });
+    }
   }
 
   @Get('/api/health')
@@ -210,11 +241,20 @@ export class AppController {
         req.url?.includes('sitemap.xml');
 
       if (!isBrowserNoise) {
-        this.controlPlane.recordEvent({
-          type: 'route.error',
-          message: 'Route handling failed.',
-          level: 'error',
-        });
+        try {
+          await this.controlPlane.recordEvent({
+            type: 'route.error',
+            message: 'Route handling failed.',
+            level: 'error',
+            metadata: {
+              method: req.method,
+              url: req.url,
+            },
+          });
+        } catch (recordEventError) {
+          console.error('Failed to record route error event:', recordEventError);
+        }
+
         console.error(
           'React Router error:',
           error instanceof Error ? error.message : String(error)

@@ -57,6 +57,8 @@ When the app is running, the web shell exposes:
 - task/run surface
 - realtime updates from `/api/control-plane/events`
 
+The control-plane task and activity panels are persisted through PostgreSQL. After schema changes, run `pnpm db:push` before starting or smoke-testing the app.
+
 ## Notes
 
 - `pnpm start` runs the built production app path from `apps/server/dist/apps/server/src/main.js`.

@@ -8,7 +8,7 @@ export class ControlPlaneController {
 
   @Get('summary')
   async summary(@Res() reply: FastifyReply) {
-    reply.send(this.controlPlane.getSummary());
+    reply.send(await this.controlPlane.getSummary());
   }
 
   @Get('events')

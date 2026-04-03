@@ -17,25 +17,43 @@ export class DemoProcessor extends WorkerHost {
     const taskId = typeof job.data?.taskId === 'string' ? job.data.taskId : null;
 
     if (taskId) {
-      this.controlPlane.updateTask(taskId, { status: 'running' });
+      await this.controlPlane.updateTask(taskId, {
+        status: 'running',
+        metadata: {
+          jobId: job.id,
+        },
+      });
     }
 
-    this.controlPlane.recordEvent({
+    await this.controlPlane.recordEvent({
       type: 'task.demo.started',
       message: `Demo job ${job.id} started.`,
       level: 'info',
+      taskRunId: taskId,
+      metadata: {
+        jobId: job.id,
+      },
     });
 
     await new Promise((resolve) => setTimeout(resolve, 250));
 
     if (taskId) {
-      this.controlPlane.updateTask(taskId, { status: 'completed' });
+      await this.controlPlane.updateTask(taskId, {
+        status: 'completed',
+        metadata: {
+          jobId: job.id,
+        },
+      });
     }
 
-    this.controlPlane.recordEvent({
+    await this.controlPlane.recordEvent({
       type: 'task.demo.completed',
       message: `Demo job ${job.id} completed.`,
       level: 'success',
+      taskRunId: taskId,
+      metadata: {
+        jobId: job.id,
+      },
     });
 
     return { echoed: job.data, processedAt: new Date().toISOString() };

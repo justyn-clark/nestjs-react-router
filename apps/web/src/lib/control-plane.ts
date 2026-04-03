@@ -4,6 +4,7 @@ export interface ActivityEvent {
   message: string;
   level: 'info' | 'success' | 'warn' | 'error';
   createdAt: string;
+  taskRunId?: string | null;
   metadata?: Record<string, unknown>;
 }
 
@@ -13,6 +14,10 @@ export interface TaskRun {
   status: 'queued' | 'running' | 'completed' | 'failed';
   createdAt: string;
   updatedAt: string;
+  startedAt?: string | null;
+  completedAt?: string | null;
+  failedAt?: string | null;
+  sourceCommand?: string | null;
   metadata?: Record<string, unknown>;
 }
 
