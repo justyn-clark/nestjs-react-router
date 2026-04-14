@@ -29,6 +29,20 @@ Use this if you want:
 - Redis-backed sessions and queue wiring
 - deterministic verification that is friendly to both humans and agents
 
+## Build history estimate
+
+Based on the local Codex session history tied to this repo's latest major build pass, the main agent build session reached about 15.2M total tokens.
+
+Useful context:
+- about 14.4M were cached input tokens
+- about 689,917 were fresh non-cached input tokens
+- about 61,073 were output tokens
+- about 26,995 were reasoning output tokens
+
+That puts the fresh work in that tracked build pass at roughly 778k non-cached plus output/reasoning tokens, while the raw total is much higher because the session repeatedly reused cached context.
+
+This is not a universal benchmark for every app, but it is a practical signal that starting from this template can save substantial agent work compared with rebuilding the same stack, seams, docs, and verification flow from scratch.
+
 ## What it includes
 
 - NestJS 11 on Fastify 5
@@ -154,6 +168,7 @@ pnpm docker:down
 - Architecture: `docs/architecture.md`
 - Local development: `docs/local-development.md`
 - Agent legibility: `docs/agent-legibility.md`
+- Token estimate note: `docs/token-estimate.md`
 - Tech stack map: `docs/tech-stack-map.md`
 - Release checklist: `docs/release-checklist.md`
 - Route notes: `apps/web/src/routes/README.md`
