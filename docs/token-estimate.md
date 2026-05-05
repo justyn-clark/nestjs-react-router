@@ -1,6 +1,6 @@
-# Token estimate
+# Build history and token estimate
 
-This repo now includes a rough token-cost estimate for the latest major Codex-driven build pass that shaped the current starter.
+The README keeps this point high-level. This note preserves the detailed estimate for anyone who wants to understand the tracked Codex build pass behind the starter.
 
 ## Estimate
 
@@ -29,8 +29,8 @@ For that reason, the most useful number for a savings narrative is usually the f
 - It reflects the latest major tracked build pass tied to this repo, not necessarily every token ever spent across the repo's full lifetime.
 - Different agents, prompts, verification depth, and caching behavior will change the number substantially.
 
-## Suggested wording
+## README wording
 
-You can describe the starter like this:
+The front-page README intentionally keeps this short:
 
-> The main Codex build pass for this starter reached about 15.2M total tokens, including heavy cached-context reuse. Fresh non-cached work in that pass was closer to 778k tokens. Starting from this template can save substantial agent work compared with rebuilding the same stack, seams, docs, and verification flow from scratch.
+> This starter packages roughly 778k fresh agent-work tokens of solved product and integration work. Starting here means you do not have to spend that work rediscovering the NestJS/React Router seams, workspace wiring, docs, and verification loop from scratch.

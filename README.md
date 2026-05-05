@@ -29,19 +29,11 @@ Use this if you want:
 - Redis-backed sessions and queue wiring
 - deterministic verification that is friendly to both humans and agents
 
-## Build history estimate
+## Why it saves work
 
-Based on the local Codex session history tied to this repo's latest major build pass, the main agent build session reached about 15.2M total tokens.
+This starter packages roughly 778k fresh agent-work tokens of solved product and integration work. Starting here means you do not have to spend that work rediscovering the NestJS/React Router seams, workspace wiring, docs, and verification loop from scratch.
 
-Useful context:
-- about 14.4M were cached input tokens
-- about 689,917 were fresh non-cached input tokens
-- about 61,073 were output tokens
-- about 26,995 were reasoning output tokens
-
-That puts the fresh work in that tracked build pass at roughly 778k non-cached plus output/reasoning tokens, while the raw total is much higher because the session repeatedly reused cached context.
-
-This is not a universal benchmark for every app, but it is a practical signal that starting from this template can save substantial agent work compared with rebuilding the same stack, seams, docs, and verification flow from scratch.
+See `docs/token-estimate.md` for the detailed estimate and caveats.
 
 ## What it includes
 
