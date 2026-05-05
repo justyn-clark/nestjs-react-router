@@ -1,4 +1,6 @@
-import 'dotenv/config';
+import { loadEnv } from '@nestjs-react-router/env';
+
+loadEnv();
 import { defineConfig } from 'drizzle-kit';
 
 export default defineConfig({

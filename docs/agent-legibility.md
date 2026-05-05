@@ -37,6 +37,7 @@ An AI agent should be able to quickly infer:
 - `apps/server` owns HTTP, SSR orchestration, session handling, and queue hooks
 - `apps/web` owns route tree, UI, loaders, and actions
 - `packages/db` owns PostgreSQL schema and connection helpers
+- `packages/env` owns monorepo-friendly `.env` discovery for workspace packages
 - `packages/redis` owns Redis wiring
 - `packages/shared` owns shared schemas and helpers
 

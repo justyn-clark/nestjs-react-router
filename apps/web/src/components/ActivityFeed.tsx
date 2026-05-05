@@ -27,16 +27,21 @@ export function ActivityFeed({ events }: { events: ActivityEvent[] }) {
       <div className="space-y-3">
         {events.length ? (
           events.map((event) => (
-            <div key={event.id} className="border border-slate-200 px-3 py-3">
-              <div className="flex items-center justify-between gap-3">
-                <div className={`text-sm font-medium ${levelStyles[event.level]}`}>
+            <div key={event.id} className="overflow-hidden border border-slate-200 px-3 py-3">
+              <div className="grid gap-1 sm:grid-cols-[minmax(0,1fr)_auto] sm:items-start sm:gap-3">
+                <div
+                  className={`min-w-0 break-words text-sm font-medium ${levelStyles[event.level]}`}
+                >
                   {event.message}
                 </div>
-                <div className="text-xs text-slate-500">
+                <time
+                  className="shrink-0 whitespace-nowrap text-xs text-slate-500"
+                  dateTime={event.createdAt}
+                >
                   {new Date(event.createdAt).toLocaleTimeString()}
-                </div>
+                </time>
               </div>
-              <div className="mt-1 text-xs uppercase tracking-[0.14em] text-slate-400">
+              <div className="mt-1 break-words text-xs uppercase tracking-[0.14em] text-slate-400">
                 {event.type}
               </div>
               {(event.taskRunId || event.metadata) && (

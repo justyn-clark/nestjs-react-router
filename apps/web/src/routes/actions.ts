@@ -1,6 +1,61 @@
 import type { ActionFunctionArgs } from 'react-router';
 import { appUrl } from '../lib/app-url';
 
+const contactFieldLabels: Record<string, string> = {
+  email: 'Email address',
+  name: 'Name',
+  message: 'Message',
+};
+
+function isRecord(value: unknown): value is Record<string, unknown> {
+  return typeof value === 'object' && value !== null;
+}
+
+function getContactErrorMessage(payload: unknown) {
+  if (!isRecord(payload)) {
+    return 'Contact submission failed. Please try again.';
+  }
+
+  const error = payload.error;
+
+  if (typeof error === 'string') {
+    return error;
+  }
+
+  if (!isRecord(error)) {
+    return 'Contact submission failed. Please try again.';
+  }
+
+  const formErrors = error.formErrors;
+
+  if (Array.isArray(formErrors)) {
+    const formError = formErrors.find((item): item is string => typeof item === 'string');
+
+    if (formError) {
+      return formError;
+    }
+  }
+
+  const fieldErrors = error.fieldErrors;
+
+  if (isRecord(fieldErrors)) {
+    const messages = Object.entries(fieldErrors).flatMap(([field, value]) => {
+      if (!Array.isArray(value)) {
+        return [];
+      }
+
+      const message = value.find((item): item is string => typeof item === 'string');
+      return message ? [`${contactFieldLabels[field] || field}: ${message}`] : [];
+    });
+
+    if (messages.length) {
+      return `Please check the form. ${messages.join(' ')}`;
+    }
+  }
+
+  return 'Contact submission failed. Please try again.';
+}
+
 export async function rootAction({ request }: ActionFunctionArgs) {
   const formData = await request.formData();
   const action = formData.get('action');
@@ -75,31 +130,38 @@ export async function contactAction({ request }: ActionFunctionArgs) {
     return Response.json({ error: 'Message required' }, { status: 400 });
   }
 
-  const response = await fetch(appUrl('/api/contact', request), {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-      Cookie: request.headers.get('cookie') || '',
-    },
-    body: JSON.stringify({
-      email,
-      name,
-      message,
-    }),
-  });
-
-  const payload = await response.json();
-
-  if (!response.ok) {
-    return Response.json(
-      {
-        error: payload?.error?.formErrors?.[0] || payload?.error || 'Contact submission failed',
+  try {
+    const response = await fetch(appUrl('/api/contact', request), {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        Cookie: request.headers.get('cookie') || '',
       },
-      { status: response.status }
+      body: JSON.stringify({
+        email,
+        name,
+        message,
+      }),
+    });
+
+    const payload = (await response.json().catch(() => null)) as unknown;
+
+    if (!response.ok) {
+      return Response.json(
+        {
+          error: getContactErrorMessage(payload),
+        },
+        { status: response.status }
+      );
+    }
+
+    return Response.json({ ok: true, submission: isRecord(payload) ? payload.submission : null });
+  } catch {
+    return Response.json(
+      { error: 'Contact submission failed. Please check your connection and try again.' },
+      { status: 503 }
     );
   }
-
-  return Response.json({ ok: true, submission: payload.submission });
 }
 
 export async function dashboardAction({ request }: ActionFunctionArgs) {

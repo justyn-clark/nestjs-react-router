@@ -20,7 +20,9 @@ async function bootstrap() {
       new FastifyAdapter({
         logger: true,
         disableRequestLogging: true,
-        ignoreTrailingSlash: true,
+        routerOptions: {
+          ignoreTrailingSlash: true,
+        },
         forceCloseConnections: true,
         trustProxy: true,
       }),

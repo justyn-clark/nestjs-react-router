@@ -4,7 +4,7 @@
   "packageManager": "pnpm@9.7.0",
   "scripts": {
     "build": "turbo build",
-    "dev": "lsof -ti:3000,5174 | xargs -r kill -9; pkill -f 'turbo run dev' 2>/dev/null || true; pkill -f 'tsx.*watch.*main.ts' 2>/dev/null || true; turbo run dev --filter @nestjs-react-router/server... --filter @nestjs-react-router/web...",
+    "dev": "lsof -ti:3000,5174 | xargs -r kill -9; pkill -f 'turbo run dev' 2>/dev/null || true; pkill -f 'tsx.*watch.*main.ts' 2>/dev/null || true; pnpm --filter @nestjs-react-router/env build && turbo run dev --filter @nestjs-react-router/server... --filter @nestjs-react-router/web...",
     "lint": "npx biome lint .",
     "lint:fix": "npx biome lint --write .",
     "format": "npx biome format --write .",
@@ -35,7 +35,8 @@
     "turbo": "2.5.8",
     "prettier": "^3.3.3",
     "@types/node": "^22.7.4",
-    "tsx": "^4.19.1"
+    "tsx": "^4.19.1",
+    "typescript": "^5.6.2"
   },
   "workspaces": ["apps/*", "packages/*"],
   "pnpm": {

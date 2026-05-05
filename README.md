@@ -78,6 +78,8 @@ pnpm dev
 
 Open `http://localhost:3000`.
 
+`pnpm db:push` will create the `DATABASE_URL` database when it does not exist and the configured Postgres user has `CREATEDB` permission. With hosted or restricted Postgres users, create the database manually first and then run `pnpm db:push`.
+
 ### Compose-backed path
 
 If ports `3000`, `5432`, or `6379` are already occupied:
@@ -92,7 +94,7 @@ DATABASE_URL=postgres://postgres:postgres@localhost:${NRR_POSTGRES_PORT}/appdb p
 pnpm start
 ```
 
-Open `http://localhost:${NRR_APP_PORT}``.
+Open `http://localhost:${NRR_APP_PORT}`.
 
 ### Full compose app container
 

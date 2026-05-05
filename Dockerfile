@@ -7,6 +7,7 @@ COPY package.json pnpm-lock.yaml pnpm-workspace.yaml turbo.json ./
 COPY apps/server/package.json ./apps/server/package.json
 COPY apps/web/package.json ./apps/web/package.json
 COPY packages/db/package.json ./packages/db/package.json
+COPY packages/env/package.json ./packages/env/package.json
 COPY packages/redis/package.json ./packages/redis/package.json
 COPY packages/shared/package.json ./packages/shared/package.json
 RUN pnpm install --frozen-lockfile

@@ -17,6 +17,7 @@ The server is the runtime entrypoint. React Router is rendered through that serv
 - `apps/server`: NestJS entrypoint, SSR bridge, auth/session endpoints, health endpoint, and BullMQ demo queue.
 - `apps/web`: React 19 + React Router 7 application built with Vite.
 - `packages/db`: Drizzle ORM package for PostgreSQL schema and health checks.
+- `packages/env`: shared `.env` discovery for workspace packages that may run from subdirectories.
 - `packages/redis`: shared Redis client for sessions and queue infrastructure.
 - `packages/shared`: shared schemas and helpers used across the monorepo.
 

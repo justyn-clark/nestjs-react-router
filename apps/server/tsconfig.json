@@ -2,7 +2,7 @@
   "compilerOptions": {
     "target": "ES2022",
     "module": "ESNext",
-    "moduleResolution": "Bundler",
+    "moduleResolution": "bundler",
     "jsx": "react-jsx",
     "outDir": "dist",
     "rootDir": "../..",
@@ -14,6 +14,8 @@
     "experimentalDecorators": true,
     "baseUrl": ".",
     "paths": {
+      "@nestjs-react-router/env": ["../../packages/env/src/index.ts"],
+      "@nestjs-react-router/env/*": ["../../packages/env/src/*"],
       "@nestjs-react-router/db": ["../../packages/db/src/index.ts"],
       "@nestjs-react-router/db/*": ["../../packages/db/src/*"],
       "@nestjs-react-router/redis": ["../../packages/redis/src/index.ts"],
@@ -23,6 +25,7 @@
     }
   },
   "include": [
+    "../../packages/env/src",
     "../../packages/shared/src",
     "src",
     "../../packages/redis/src",

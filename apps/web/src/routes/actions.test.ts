@@ -39,6 +39,45 @@ test('contactAction rejects missing message', async () => {
   assert.equal(payload.error, 'Message required');
 });
 
+test('contactAction returns a friendly message for backend validation errors', async () => {
+  const restore = mock.method(globalThis, 'fetch', async () => {
+    return Response.json(
+      {
+        ok: false,
+        error: {
+          formErrors: [],
+          fieldErrors: {
+            email: ['Invalid email address'],
+            message: ['Too small: expected string to have >=10 characters'],
+          },
+        },
+      },
+      { status: 400 }
+    );
+  });
+
+  try {
+    const response = await contactAction(
+      makeActionArgs(
+        makeRequest('http://localhost:3000/contact', {
+          email: 'not-an-email',
+          name: 'Justyn',
+          message: 'short',
+        })
+      )
+    );
+
+    assert.equal(response.status, 400);
+    const payload = await response.json();
+    assert.equal(
+      payload.error,
+      'Please check the form. Email address: Invalid email address Message: Too small: expected string to have >=10 characters'
+    );
+  } finally {
+    restore.mock.restore();
+  }
+});
+
 test('contactAction posts to the backend and returns success', async () => {
   const restore = mock.method(globalThis, 'fetch', async () => {
     return Response.json(

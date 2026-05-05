@@ -1,4 +1,6 @@
-import 'dotenv/config';
+import { loadEnv } from '@nestjs-react-router/env';
+
+loadEnv();
 import Redis from 'ioredis';
 
 export const redis = new Redis(process.env.REDIS_URL || 'redis://localhost:6379');

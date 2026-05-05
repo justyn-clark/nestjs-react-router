@@ -17,6 +17,8 @@ pnpm dev
 
 Open `http://localhost:3000`.
 
+`pnpm db:push` creates the `DATABASE_URL` database when it does not exist and the configured Postgres user has `CREATEDB` permission. If you use a hosted database or a restricted local user, create the database manually first, then run `pnpm db:push` to apply the schema.
+
 ## Quick start with Docker
 
 If ports `3000`, `5432`, or `6379` are already occupied on your machine, override the host ports first.
@@ -62,5 +64,6 @@ The control-plane task and activity panels are persisted through PostgreSQL. Aft
 ## Notes
 
 - `pnpm start` runs the built production app path from `apps/server/dist/apps/server/src/main.js`.
-- `pnpm dev` runs the development path.
+- `pnpm dev` runs the development path and serves the app at `http://localhost:3000` unless `PORT` is changed.
+- Workspace packages load the nearest `.env` file up to the repository root. Set `DOTENV_CONFIG_PATH=/absolute/path/to/.env` to force a specific file.
 - `pnpm test:e2e` is an end-to-end smoke script against a running app instance.
