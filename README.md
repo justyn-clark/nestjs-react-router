@@ -16,6 +16,9 @@
   <img src="assets/logos/rr_logo_light.svg" alt="React Router Logo" width="120" height="120"/>
 </p>
 
+<p align="center">
+</p>
+
 A truthful, opinionated starter where NestJS 11 hosts and renders a React Router 7 app with SSR, React 19, PostgreSQL persistence, Redis-backed state, and shared workspace packages.
 
 </div>
