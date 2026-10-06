@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { useLoaderData } from 'react-router-dom';
+import { useLoaderData } from 'react-router';
 
 export function Stream() {
   const data = useLoaderData() as { data: string };

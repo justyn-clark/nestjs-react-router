@@ -2,6 +2,9 @@
   "name": "nestjs-react-router",
   "private": true,
   "packageManager": "pnpm@9.7.0",
+  "engines": {
+    "node": ">=22.22.0"
+  },
   "scripts": {
     "build": "turbo build",
     "dev": "lsof -ti:3000,5174 | xargs -r kill -9; pkill -f 'turbo run dev' 2>/dev/null || true; pkill -f 'tsx.*watch.*main.ts' 2>/dev/null || true; pnpm --filter @nestjs-react-router/env build && turbo run dev --filter @nestjs-react-router/server... --filter @nestjs-react-router/web...",

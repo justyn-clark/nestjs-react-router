@@ -1,14 +1,15 @@
 import assert from 'node:assert/strict';
 import test, { mock } from 'node:test';
+import { RouterContextProvider } from 'react-router';
 import { dashboardLoader, rootLoader } from './loaders';
 
 function makeLoaderArgs(request: Request): Parameters<typeof rootLoader>[0] {
   return {
     request,
     params: {},
-    context: undefined,
-    unstable_pattern: '',
-    unstable_url: new URL(request.url),
+    context: new RouterContextProvider(),
+    pattern: '',
+    url: new URL(request.url),
   };
 }
 

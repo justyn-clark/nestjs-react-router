@@ -66,9 +66,15 @@ For compose-backed services:
 export NRR_APP_PORT=3300
 export NRR_POSTGRES_PORT=55432
 export NRR_REDIS_PORT=56379
-pnpm docker:up
-DATABASE_URL=postgres://postgres:postgres@localhost:${NRR_POSTGRES_PORT}/appdb pnpm db:push
-PORT=${NRR_APP_PORT} NODE_ENV=production DATABASE_URL=postgres://postgres:postgres@localhost:${NRR_POSTGRES_PORT}/appdb REDIS_URL=redis://localhost:${NRR_REDIS_PORT} pnpm start
+export PORT=${NRR_APP_PORT}
+export DATABASE_URL=postgres://postgres:postgres@localhost:${NRR_POSTGRES_PORT}/appdb
+export REDIS_URL=redis://localhost:${NRR_REDIS_PORT}
+export APP_INTERNAL_ORIGIN=http://127.0.0.1:${PORT}
+docker compose up -d postgres redis
+pnpm install
+pnpm db:push
+pnpm verify
+NODE_ENV=production pnpm start
 SMOKE_BASE_URL=http://127.0.0.1:${NRR_APP_PORT} pnpm test:e2e
 ```
 
