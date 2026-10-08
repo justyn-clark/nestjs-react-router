@@ -1,6 +1,6 @@
 # Architecture
 
-This starter combines a NestJS 11 Fastify server with a React 19 + React Router 7 app that is rendered and served through the server.
+This starter combines a NestJS 11 Fastify server with a React 19 + React Router 8 app that is rendered and served through the server.
 
 ## Runtime shape
 
@@ -15,7 +15,7 @@ The server is the runtime entrypoint. React Router is rendered through that serv
 ## Packages
 
 - `apps/server`: NestJS entrypoint, SSR bridge, auth/session endpoints, health endpoint, and BullMQ demo queue.
-- `apps/web`: React 19 + React Router 7 application built with Vite.
+- `apps/web`: React 19 + React Router 8 application built with Vite.
 - `packages/db`: Drizzle ORM package for PostgreSQL schema and health checks.
 - `packages/env`: shared `.env` discovery for workspace packages that may run from subdirectories.
 - `packages/redis`: shared Redis client for sessions and queue infrastructure.
@@ -37,6 +37,8 @@ The server is the runtime entrypoint. React Router is rendered through that serv
 - A lightweight control-plane service exposes recent activity, task runs, and realtime events for the web shell.
 
 ## Routing notes
+
+The app uses React Router 8 Data APIs with a custom Nest-hosted SSR bridge. `createStaticHandler` executes loaders/actions on the server, `createStaticRouter` and `StaticRouterProvider` render the route tree, and `createBrowserRouter` hydrates it in the browser. Vite 8 builds the client assets; this project does not use the React Router Framework-mode Vite plugin.
 
 - `apps/web/src/routes.tsx` is a small manifest, not an inline route soup file.
 - route modules live under `apps/web/src/modules/<feature>/routes/`.
@@ -65,7 +67,7 @@ This is intended as a practical seam for agent-native and operations-aware appli
 This repo is meant to be a strong starting point for full-stack applications that want:
 
 - NestJS for backend structure
-- React Router 7 for the frontend app shell
+- React Router 8 for the frontend app shell
 - SSR without a separate Next.js-style framework
 - Redis-backed sessions and queue support
 - a shared package workspace for schemas and infra code

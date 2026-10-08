@@ -2,7 +2,7 @@ import * as React from 'react';
 
 const stackRows = [
   ['NestJS', 'HTTP server, SSR orchestration, route endpoints, queue wiring'],
-  ['React Router 7', 'UI routing, loaders, actions, protected views, SSR entry'],
+  ['React Router 8', 'UI routing, loaders, actions, protected views, SSR entry'],
   ['PostgreSQL + Drizzle', 'persistent application data and explicit schema ownership'],
   ['Redis + BullMQ', 'sessions, queue state, and async execution seams'],
   ['pnpm + Turbo', 'workspace structure and deterministic verification flow'],

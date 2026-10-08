@@ -27,7 +27,7 @@ Why it matters:
 - modern React baseline for new application work
 - strong ecosystem support and compatibility with current React Router patterns
 
-### React Router 7
+### React Router 8
 
 Role:
 - route model
@@ -35,15 +35,18 @@ Role:
 - SSR route execution model
 - UI-level control-plane surface
 
-
-Role:
-- route model
-- loader/action model
-- SSR route execution model
-
 Why it matters:
 - route modules make application behavior easier to understand and evolve
 - loaders and actions provide explicit seams for data and mutations
+
+### Vite 8
+
+Role:
+- browser asset build and watch process
+- React and Tailwind transforms
+- asset manifest consumed by the Nest SSR entry
+
+The client build uses `rolldownOptions` and writes to `apps/web/dist/client`. Node 24 LTS is the recommended build and server runtime.
 
 ### PostgreSQL + Drizzle
 

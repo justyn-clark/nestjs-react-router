@@ -1,6 +1,6 @@
 import { hydrateRoot } from 'react-dom/client';
-import type { HydrationState, RouteObject } from 'react-router';
-import { RouterProvider, createBrowserRouter } from 'react-router-dom';
+import { type HydrationState, type RouteObject, createBrowserRouter } from 'react-router';
+import { RouterProvider } from 'react-router/dom';
 import './index.css';
 import { routes } from './routes.js';
 

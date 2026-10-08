@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { Form, useActionData } from 'react-router-dom';
+import { Form, useActionData } from 'react-router';
 
 export function Contact() {
   const res = useActionData() as { ok?: boolean; error?: string } | undefined;

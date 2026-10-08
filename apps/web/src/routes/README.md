@@ -36,7 +36,9 @@ src/
 - `index(...)`
 - `route(...)`
 
-This mirrors the direction used in JustBeatz-style route organization even though this starter is still using runtime `RouteObject` composition rather than the full `@react-router/dev/routes` toolchain.
+The app uses React Router 8 Data APIs and runtime `RouteObject` composition, with SSR hosted by Nest. It does not use the Framework-mode `@react-router/dev/routes` toolchain. Import routing APIs from `react-router` and the browser `RouterProvider` from `react-router/dom`.
+
+`src/routes/ssr.test.ts` exercises the server handler, rendered hydration payload, protected redirects, session-cookie forwarding, and form actions. See `../../../../docs/react-router-8.md` for migration details.
 
 ## Next extension rule
 

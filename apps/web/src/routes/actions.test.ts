@@ -1,5 +1,6 @@
 import assert from 'node:assert/strict';
 import test, { mock } from 'node:test';
+import { RouterContextProvider } from 'react-router';
 import { contactAction, rootAction } from './actions';
 
 function makeRequest(url: string, form: Record<string, string>) {
@@ -18,9 +19,9 @@ function makeActionArgs(request: Request): Parameters<typeof rootAction>[0] {
   return {
     request,
     params: {},
-    context: undefined,
-    unstable_pattern: '',
-    unstable_url: new URL(request.url),
+    context: new RouterContextProvider(),
+    pattern: '',
+    url: new URL(request.url),
   };
 }
 

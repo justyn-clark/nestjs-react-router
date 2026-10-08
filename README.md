@@ -7,7 +7,7 @@
   <a href="https://github.com/justyn-clark/nestjs-react-router/releases"><img alt="Release" src="https://img.shields.io/github/v/release/justyn-clark/nestjs-react-router?display_name=tag"></a>
   <a href="https://github.com/justyn-clark/nestjs-react-router/tags"><img alt="Tag" src="https://img.shields.io/github/v/tag/justyn-clark/nestjs-react-router"></a>
   <a href="./LICENSE"><img alt="License" src="https://img.shields.io/github/license/justyn-clark/nestjs-react-router"></a>
-  <a href="#quick-start"><img alt="Stack" src="https://img.shields.io/badge/stack-NestJS%20%7C%20React%20Router%207%20%7C%20PostgreSQL%20%7C%20Redis-0f172a"></a>
+  <a href="#quick-start"><img alt="Stack" src="https://img.shields.io/badge/stack-NestJS%20%7C%20React%20Router%208%20%7C%20PostgreSQL%20%7C%20Redis-0f172a"></a>
 </p>
 
 <p align="center">
@@ -17,7 +17,7 @@
 </p>
 
 
-A truthful, opinionated starter where NestJS 11 hosts and renders a React Router 7 app with SSR, React 19, PostgreSQL persistence, Redis-backed state, and shared workspace packages.
+A truthful, opinionated starter where NestJS 11 hosts and renders a React Router 8 app with SSR, React 19, PostgreSQL persistence, Redis-backed state, and shared workspace packages.
 
 </div>
 
@@ -25,7 +25,7 @@ A truthful, opinionated starter where NestJS 11 hosts and renders a React Router
 
 Use this if you want:
 - one Nest-hosted full-stack app instead of a fake split frontend/backend setup
-- SSR with React Router 7
+- SSR with React Router 8
 - PostgreSQL via Drizzle
 - Redis-backed sessions and queue wiring
 - deterministic verification that is friendly to both humans and agents
@@ -39,7 +39,7 @@ See `docs/token-estimate.md` for the detailed estimate and caveats.
 ## What it includes
 
 - NestJS 11 on Fastify 5
-- React 19 + React Router 7 SSR bridge
+- React 19 + React Router 8 SSR bridge
 - pnpm workspace + Turborepo layout
 - route-module manifest pattern for feature-oriented routing
 - PostgreSQL package with Drizzle schema and helpers
@@ -59,6 +59,8 @@ This starter is publishable and usable, but it stays honest about what is still 
 - queue processing is demo scaffolding
 
 ## Quick start
+
+Use Node.js 24 LTS (or Node.js 22.22.0+) and pnpm 9.7.0. Run `nvm install && nvm use` to install and select the version in `.nvmrc`.
 
 ### Local services already available
 
@@ -82,21 +84,35 @@ cp .env.example .env
 export NRR_APP_PORT=3300
 export NRR_POSTGRES_PORT=55432
 export NRR_REDIS_PORT=56379
-pnpm docker:up
-DATABASE_URL=postgres://postgres:postgres@localhost:${NRR_POSTGRES_PORT}/appdb pnpm db:push
-pnpm start
+export PORT=${NRR_APP_PORT}
+export DATABASE_URL=postgres://postgres:postgres@localhost:${NRR_POSTGRES_PORT}/appdb
+export REDIS_URL=redis://localhost:${NRR_REDIS_PORT}
+export APP_INTERNAL_ORIGIN=http://127.0.0.1:${PORT}
+docker compose up -d postgres redis
+pnpm install
+pnpm db:push
+pnpm build
+NODE_ENV=production pnpm start
 ```
 
 Open `http://localhost:${NRR_APP_PORT}`.
 
 ### Full compose app container
 
+For a fresh database, apply the schema before starting the app container:
+
 ```bash
+cp .env.example .env
 export NRR_APP_PORT=3300
 export NRR_POSTGRES_PORT=55432
 export NRR_REDIS_PORT=56379
+pnpm install
+docker compose up -d postgres redis
+DATABASE_URL=postgres://postgres:postgres@localhost:${NRR_POSTGRES_PORT}/appdb pnpm db:push
 pnpm docker:up:build
 ```
+
+The app container uses the Compose network for PostgreSQL and Redis. Its published port is `NRR_APP_PORT`.
 
 ## Verify it
 
@@ -160,6 +176,7 @@ pnpm docker:down
 
 ## Read next
 
+- React Router 8 migration: `docs/react-router-8.md`
 - Architecture: `docs/architecture.md`
 - Local development: `docs/local-development.md`
 - Agent legibility: `docs/agent-legibility.md`
